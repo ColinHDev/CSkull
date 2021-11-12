@@ -5,4 +5,7 @@ branches:
 projects:
   CSkull:
     path: ""
+    libs:
+    - src: poggit/libasynql/libasynql
+      version: ^3.2.1
 ...
