@@ -72,7 +72,7 @@ class Skull extends PMMPSkull {
         return $success;
     }
 
-    private function getFacingDependentPosition() : Position {
+    public function getFacingDependentPosition() : Position {
         $vector3 = match ($this->facing) {
             Facing::UP => $this->position->add(0.5, 0, 0.5),
             Facing::NORTH => $this->position->add(0.5, 0.25, 0.75),
@@ -84,7 +84,7 @@ class Skull extends PMMPSkull {
         return Position::fromObject($vector3, $this->position->getWorld());
     }
 
-    private function getEntityYaw() : float {
+    public function getEntityYaw() : float {
         switch ($this->facing) {
             case Facing::NORTH:
                 return 180.0;
@@ -105,7 +105,7 @@ class Skull extends PMMPSkull {
         }
     }
 
-    private function getSkullEntity() : ?SkullEntity {
+    public function getSkullEntity() : ?SkullEntity {
         if (!$this->position->isValid()) {
             return null;
         }
