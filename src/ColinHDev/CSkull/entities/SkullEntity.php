@@ -66,6 +66,10 @@ class SkullEntity extends Human implements ChunkListener {
         $source->cancel();
     }
 
+    public function hasMovementUpdate() : bool {
+        return false;
+    }
+
     public function flagForDespawn() : void {
         parent::flagForDespawn();
         // We need to unregister this entity from its chunk as ChunkListener when it's flagged for despawn, e.g.
