@@ -68,10 +68,7 @@ class SkullEntity extends Human implements ChunkListener {
                 if (!$player->isOnline()) {
                     return;
                 }
-                $showSkulls = (bool) $rows[array_key_first($rows)]["showSkulls"];
-                if ($showSkulls) {
-                    parent::spawnTo($player);
-                }
+                $this->handleSpawn($player, ((bool) $rows[array_key_first($rows)]["showSkulls"]));
             },
             function (SqlError $error) use ($player) : void {
                 // If there was an error while executing the query, we just do the default behaviour and spawn the
@@ -79,9 +76,21 @@ class SkullEntity extends Human implements ChunkListener {
                 if (!$player->isOnline()) {
                     return;
                 }
-                parent::spawnTo($player);
+                $this->handleSpawn($player, true);
             }
         );
+    }
+
+    public function handleSpawn(Player $player, bool $spawn) : void {
+        if ($spawn) {
+            // We don't need to check whether the player should even be able to see the entity or is too far away, as
+            // that is done by Entity::spawnTo().
+            parent::spawnTo($player);
+        } else {
+            // We don't need to check whether the entity is even spawned to the player, as that is done by
+            // Entity::despawnFrom().
+            parent::despawnFrom($player);
+        }
     }
 
     public function attack(EntityDamageEvent $source) : void {
