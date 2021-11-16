@@ -51,8 +51,8 @@ class SkullEntity extends Human implements ChunkListener {
         $position = $this->getPosition();
         $this->getWorld()->registerChunkListener(
             $this,
-            ((int) floor($position->x)) >> Chunk::COORD_BIT_SIZE,
-            ((int) floor($position->z)) >> Chunk::COORD_BIT_SIZE
+            $position->getFloorX() >> Chunk::COORD_BIT_SIZE,
+            $position->getFloorZ() >> Chunk::COORD_BIT_SIZE
         );
     }
 
@@ -112,8 +112,8 @@ class SkullEntity extends Human implements ChunkListener {
         $position = $this->getPosition();
         $this->getWorld()->unregisterChunkListener(
             $this,
-            ((int) floor($position->x)) >> Chunk::COORD_BIT_SIZE,
-            ((int) floor($position->z)) >> Chunk::COORD_BIT_SIZE
+            $position->getFloorX() >> Chunk::COORD_BIT_SIZE,
+            $position->getFloorZ() >> Chunk::COORD_BIT_SIZE
         );
     }
 
@@ -176,9 +176,9 @@ class SkullEntity extends Human implements ChunkListener {
     public function getBlockAtPosition() : Block {
         $position = $this->getPosition();
         return $this->getWorld()->getBlockAt(
-            (int) floor($position->x),
-            (int) floor($position->y),
-            (int) floor($position->z)
+            $position->getFloorX(),
+            $position->getFloorY(),
+            $position->getFloorZ()
         );
     }
 
