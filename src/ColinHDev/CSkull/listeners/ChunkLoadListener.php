@@ -34,44 +34,46 @@ class ChunkLoadListener implements Listener {
             $chunkX,
             $chunkZ,
             function (array $rows) use ($world, $chunkX, $chunkZ, $chunkLockID) : void {
-                if ($world->isLoaded()) {
-                    foreach ($rows as $row) {
-                        if ($world->isInWorld($row["x"], $row["y"], $row["z"])) {
-                            $block = $world->getBlockAt($row["x"], $row["y"], $row["z"]);
-                            // We need to make sure, that the block is still valid before we spawn the entity.
-                            // This could be the result of for example editing the world while the plugin wasn't enabled.
-                            if (SkullEntityManager::isBlockValid($block)) {
-                                // We need the block to get the respective location of the entity.
-                                /** @var Skull $block */
-                                $location = Location::fromObject(
-                                    $block->getFacingDependentPosition()->asVector3(),
-                                    $world,
-                                    $block->getEntityYaw(),
-                                    0.0
-                                );
-                                $skin = new Skin($row["playerUUID"], $row["skinData"], "", "geometry.skullEntity", SkullEntity::GEOMETRY);
-                                $skullEntity = new SkullEntity($location, $skin);
-                                $skullEntity->spawnToAll();
-                                continue;
-                            }
-                            // If the block is not valid, we can delete that row from the database, as the skull was
-                            // removed while the plugin wasn't enabled.
-                            // We don't provide any callbacks, as it isn't really important whether the query succeeds
-                            // or not, since we can't do much about it. In the worst case, the query fails and the row
-                            // isn't deleted, so that this skull entity is queried again, when the chunk is eventually
-                            // loaded again. Then just another delete query will be executed. There would still be the
-                            // possibility that a player tries to place a new skull at the non-deleted position, but
-                            // since we "REPLACE INTO" the database, shouldn't this be any problem.
-                            DataProvider::getInstance()->deleteSkullByPosition(
-                                $row["worldName"],
-                                $row["x"],
-                                $row["y"],
-                                $row["z"]
-                            );
-                        }
-                    }
-                    $world->unlockChunk($chunkX, $chunkZ, $chunkLockID);
+                if (!$world->isLoaded()) {
+                    return;
                 }
+                foreach ($rows as $row) {
+                    if (!$world->isInWorld($row["x"], $row["y"], $row["z"])) {
+                        continue;
+                    }
+                    $block = $world->getBlockAt($row["x"], $row["y"], $row["z"]);
+                    // We need to make sure, that the block is still valid before we spawn the entity.
+                    // This could be the result of for example editing the world while the plugin wasn't enabled.
+                    if (SkullEntityManager::isBlockValid($block)) {
+                        // We need the block to get the respective location of the entity.
+                        /** @var Skull $block */
+                        $location = Location::fromObject(
+                            $block->getFacingDependentPosition()->asVector3(),
+                            $world,
+                            $block->getEntityYaw(),
+                            0.0
+                        );
+                        $skin = new Skin($row["playerUUID"], $row["skinData"], "", "geometry.skullEntity", SkullEntity::GEOMETRY);
+                        $skullEntity = new SkullEntity($location, $skin);
+                        $skullEntity->spawnToAll();
+                        continue;
+                    }
+                    // If the block is not valid, we can delete that row from the database, as the skull was removed
+                    // while the plugin wasn't enabled.
+                    // We don't provide any callbacks, as it isn't really important whether the query succeeds or not,
+                    // since we can't do much about it. In the worst case, the query fails and the row isn't deleted,
+                    // so that this skull entity is queried again, when the chunk is eventually loaded again. Then just
+                    // another delete query will be executed. There would still be the possibility that a player tries
+                    // to place a new skull at the non-deleted position, but since we "REPLACE INTO" the database,
+                    // shouldn't this be any problem.
+                    DataProvider::getInstance()->deleteSkullByPosition(
+                        $row["worldName"],
+                        $row["x"],
+                        $row["y"],
+                        $row["z"]
+                    );
+                }
+                $world->unlockChunk($chunkX, $chunkZ, $chunkLockID);
             },
             function (SqlError $error) use ($world, $chunkX, $chunkZ, $chunkLockID) : void {
                 // Even if the query has failed, we need to make sure that the chunk is unlocked, so it doesn't stay
