@@ -76,9 +76,9 @@ class ShowSkullsCommand extends Command {
                     if (!$sender->isOnline()) {
                         return;
                     }
-                    $worldID = $sender->getWorld()->getId();
+                    $world = $sender->getWorld();
                     foreach ($sender->getUsedChunks() as $chunkHash => $chunkStatus) {
-                        foreach (SkullEntityManager::getInstance()->getSkullEntitiesByChunkHash($worldID, $chunkHash) as $entity) {
+                        foreach (SkullEntityManager::getInstance()->getSkullEntitiesByChunk($world, $chunkHash) as $entity) {
                             $entity->handleSpawn($sender, $showSkulls);
                         }
                     }

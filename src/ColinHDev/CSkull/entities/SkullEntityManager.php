@@ -12,7 +12,7 @@ class SkullEntityManager {
     /** @var array<int, array<int, array<int, SkullEntity>>> */
     private array $skullEntities = [];
 
-    public function getSkullEntitiesByChunkHash(World $world, int $chunkHash) : array {
+    public function getSkullEntitiesByChunk(World $world, int $chunkHash) : array {
         $worldID = $world->getId();
         if (!isset($this->skullEntities[$worldID])) {
             return [];
