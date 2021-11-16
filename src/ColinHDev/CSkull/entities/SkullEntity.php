@@ -49,13 +49,6 @@ class SkullEntity extends Human implements ChunkListener {
         $this->setNameTagAlwaysVisible(false);
 
         SkullEntityManager::getInstance()->addSkullEntity($this);
-
-        $position = $this->getPosition();
-        $this->getWorld()->registerChunkListener(
-            $this,
-            $position->getFloorX() >> Chunk::COORD_BIT_SIZE,
-            $position->getFloorZ() >> Chunk::COORD_BIT_SIZE
-        );
     }
 
     protected function getInitialSizeInfo() : EntitySizeInfo {
@@ -110,14 +103,6 @@ class SkullEntity extends Human implements ChunkListener {
     public function flagForDespawn() : void {
         parent::flagForDespawn();
         SkullEntityManager::getInstance()->removeSkullEntity($this);
-        // We need to unregister this entity from its chunk as ChunkListener when it's flagged for despawn, e.g.
-        // when its supporting skull block is broken.
-        $position = $this->getPosition();
-        $this->getWorld()->unregisterChunkListener(
-            $this,
-            $position->getFloorX() >> Chunk::COORD_BIT_SIZE,
-            $position->getFloorZ() >> Chunk::COORD_BIT_SIZE
-        );
     }
 
     public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void {

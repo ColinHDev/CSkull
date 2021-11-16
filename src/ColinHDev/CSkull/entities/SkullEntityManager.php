@@ -25,23 +25,32 @@ class SkullEntityManager {
 
     public function addSkullEntity(SkullEntity $entity) : void {
         $position = $entity->getPosition();
-        $worldID = $position->getWorld()->getId();
+        $world = $position->getWorld();
+        $worldID = $world->getId();
         if (!isset($this->skullEntities[$worldID])) {
             $this->skullEntities[$worldID] = [];
         }
-        $chunkHash = World::chunkHash($position->getFloorX() >> Chunk::COORD_BIT_SIZE, $position->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+        $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
+        $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+        $chunkHash = World::chunkHash($chunkX, $chunkZ);
         if (!isset($this->skullEntities[$worldID][$chunkHash])) {
             $this->skullEntities[$worldID][$chunkHash] = [];
         }
         $this->skullEntities[$worldID][$chunkHash][$entity->getId()] = $entity;
+        $world->registerChunkListener($entity, $chunkX, $chunkZ);
     }
 
     public function removeSkullEntity(SkullEntity $entity) : void {
         $position = $entity->getPosition();
-        $worldID = $position->getWorld()->getId();
-        $chunkHash = World::chunkHash($position->getFloorX() >> Chunk::COORD_BIT_SIZE, $position->getFloorZ() >> Chunk::COORD_BIT_SIZE);
-        $entityID = $entity->getId();
-        unset($this->skullEntities[$worldID][$chunkHash][$entityID]);
+        $world = $position->getWorld();
+        $worldID = $world->getId();
+        $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
+        $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+        $chunkHash = World::chunkHash($chunkX, $chunkZ);
+        unset($this->skullEntities[$worldID][$chunkHash][$entity->getId()]);
+        // We need to unregister this entity from its chunk as ChunkListener when it's removed and therefore
+        // flagged for despawn.
+        $world->unregisterChunkListener($entity, $chunkX, $chunkZ);
         if (count($this->skullEntities[$worldID][$chunkHash]) === 0) {
             unset($this->skullEntities[$worldID][$chunkHash]);
         }
