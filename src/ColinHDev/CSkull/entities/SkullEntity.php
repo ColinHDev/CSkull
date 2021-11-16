@@ -2,10 +2,8 @@
 
 namespace ColinHDev\CSkull\entities;
 
-use ColinHDev\CSkull\blocks\Skull;
 use ColinHDev\CSkull\DataProvider;
 use pocketmine\block\Block;
-use pocketmine\block\utils\SkullType;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -110,7 +108,7 @@ class SkullEntity extends Human implements ChunkListener {
         // WorldEdit plugin. So we need to check, whether the entity can still exist on its position or if its
         // supporting skull block was changed during the replacing of the chunk.
         $block = $this->getBlockAtPosition();
-        if (!static::isBlockValid($block)) {
+        if (!SkullEntityManager::isBlockValid($block)) {
             // It can be despawned as it's supporting skull block is broken.
             $this->flagForDespawn();
             // As the skull block was broken, we can also remove that row from the database.
@@ -144,7 +142,7 @@ class SkullEntity extends Human implements ChunkListener {
         // This method is called when a block is changed with World::setBlockAt(), e.g. when a block is broken by an
         // explosion. That's why we need to check if this entity can still exist on its position.
         $block = $this->getBlockAtPosition();
-        if (!static::isBlockValid($block)) {
+        if (!SkullEntityManager::isBlockValid($block)) {
             // It can be despawned as it's supporting skull block is broken.
             $this->flagForDespawn();
             // As the skull block was broken, we can also remove that row from the database.
@@ -168,18 +166,5 @@ class SkullEntity extends Human implements ChunkListener {
             $position->getFloorY(),
             $position->getFloorZ()
         );
-    }
-
-    /**
-     * Checks whether the skull entity can exist on a block.
-     */
-    public static function isBlockValid(Block $block) : bool {
-        // It can only exist if it's on a skull block of the player skull type.
-        if ($block instanceof Skull) {
-            if ($block->getSkullType() === SkullType::PLAYER()) {
-                return true;
-            }
-        }
-        return false;
     }
 }

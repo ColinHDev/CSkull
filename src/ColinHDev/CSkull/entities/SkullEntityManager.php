@@ -2,6 +2,9 @@
 
 namespace ColinHDev\CSkull\entities;
 
+use ColinHDev\CSkull\blocks\Skull;
+use pocketmine\block\Block;
+use pocketmine\block\utils\SkullType;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
@@ -57,5 +60,18 @@ class SkullEntityManager {
         if (count($this->skullEntities[$worldID]) === 0) {
             unset($this->skullEntities[$worldID]);
         }
+    }
+
+    /**
+     * Checks whether a skull entity can exist on the given block.
+     */
+    public static function isBlockValid(Block $block) : bool {
+        // Skull entities can only exist on skull blocks of the player skull type.
+        if ($block instanceof Skull) {
+            if ($block->getSkullType() === SkullType::PLAYER()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

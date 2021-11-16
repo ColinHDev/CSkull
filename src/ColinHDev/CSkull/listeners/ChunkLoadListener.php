@@ -5,6 +5,7 @@ namespace ColinHDev\CSkull\listeners;
 use ColinHDev\CSkull\blocks\Skull;
 use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\entities\SkullEntity;
+use ColinHDev\CSkull\entities\SkullEntityManager;
 use pocketmine\entity\Location;
 use pocketmine\entity\Skin;
 use pocketmine\event\Listener;
@@ -34,7 +35,7 @@ class ChunkLoadListener implements Listener {
                     foreach ($rows as $row) {
                         if ($world->isInWorld($row["x"], $row["y"], $row["z"])) {
                             $block = $world->getBlockAt($row["x"], $row["y"], $row["z"]);
-                            if (SkullEntity::isBlockValid($block)) {
+                            if (SkullEntityManager::isBlockValid($block)) {
                                 /** @var Skull $block */
                                 $location = Location::fromObject(
                                     $block->getFacingDependentPosition()->asVector3(),
