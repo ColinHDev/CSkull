@@ -3,6 +3,7 @@
 namespace ColinHDev\CSkull\commands;
 
 use ColinHDev\CSkull\DataProvider;
+use ColinHDev\CSkull\entities\SkullEntity;
 use ColinHDev\CSkull\ResourceManager;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -68,12 +69,21 @@ class ShowSkullsCommand extends Command {
                 $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . $this->getUsage());
                 return;
             }
+            $world = $sender->getWorld();
             DataProvider::getInstance()->setShowSkulls(
                 $sender->getUniqueId()->toString(),
                 $showSkulls,
-                function (int $affectedRows) use ($sender, $showSkulls) : void {
+                function (int $affectedRows) use ($world, $sender, $showSkulls) : void {
                     if (!$sender->isOnline()) {
                         return;
+                    }
+                    if ($world->getId() === $sender->getId()) {
+                        foreach ($world->getEntities() as $entity) {
+                            if (!$entity instanceof SkullEntity) {
+                                continue;
+                            }
+                            $entity->handleSpawn($sender, $showSkulls);
+                        }
                     }
                     if ($showSkulls) {
                         $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("showskulls.enabled"));
