@@ -3,8 +3,12 @@
 namespace ColinHDev\CSkull;
 
 use ColinHDev\CSkull\blocks\Skull as SkullBlock;
+use ColinHDev\CSkull\commands\ShowSkullsCommand;
+use ColinHDev\CSkull\commands\SkullCommand;
 use ColinHDev\CSkull\entities\SkullEntity;
 use ColinHDev\CSkull\items\Skull as SkullItem;
+use ColinHDev\CSkull\listeners\ChunkLoadListener;
+use ColinHDev\CSkull\listeners\PlayerLoginListener;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks;
@@ -40,7 +44,7 @@ class CSkull extends PluginBase implements Listener {
             true
         );
 
-        foreach(SkullType::getAll() as $skullType){
+        foreach (SkullType::getAll() as $skullType) {
             ItemFactory::getInstance()->register(
                 new SkullItem(
                     new ItemIdentifier(ItemIds::SKULL, $skullType->getMagicNumber()),
@@ -53,7 +57,7 @@ class CSkull extends PluginBase implements Listener {
 
         EntityFactory::getInstance()->register(
             SkullEntity::class,
-            function(World $world, CompoundTag $nbt) : SkullEntity {
+            function (World $world, CompoundTag $nbt) : SkullEntity {
                 return new SkullEntity(EntityDataHelper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
             },
             ["SkullEntity"]
@@ -61,6 +65,17 @@ class CSkull extends PluginBase implements Listener {
     }
 
     public function onEnable() : void {
+        ResourceManager::getInstance();
+        DataProvider::getInstance();
 
+        $this->getServer()->getPluginManager()->registerEvents(new ChunkLoadListener(), $this);
+        $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
+
+        $this->getServer()->getCommandMap()->register("CSkull", new ShowSkullsCommand());
+        $this->getServer()->getCommandMap()->register("CSkull", new SkullCommand());
+    }
+
+    public function onDisable() : void {
+        DataProvider::getInstance()->close();
     }
 }

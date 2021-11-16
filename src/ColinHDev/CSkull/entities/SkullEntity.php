@@ -3,6 +3,7 @@
 namespace ColinHDev\CSkull\entities;
 
 use ColinHDev\CSkull\blocks\Skull;
+use ColinHDev\CSkull\DataProvider;
 use pocketmine\block\Block;
 use pocketmine\block\utils\SkullType;
 use pocketmine\entity\EntitySizeInfo;
@@ -13,6 +14,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\format\Chunk;
+use poggit\libasynql\SqlError;
 
 class SkullEntity extends Human implements ChunkListener {
 
@@ -59,7 +61,27 @@ class SkullEntity extends Human implements ChunkListener {
     }
 
     public function spawnTo(Player $player) : void {
-        parent::spawnTo($player);
+        // Before spawning the entity to the player, we need to check whether he wants to see them or not.
+        DataProvider::getInstance()->getShowSkullsByUUID(
+            $player->getUniqueId()->toString(),
+            function (array $rows) use ($player) : void {
+                if (!$player->isOnline()) {
+                    return;
+                }
+                $showSkulls = (bool) $rows[array_key_first($rows)]["showSkulls"];
+                if ($showSkulls) {
+                    parent::spawnTo($player);
+                }
+            },
+            function (SqlError $error) use ($player) : void {
+                // If there was an error while executing the query, we just do the default behaviour and spawn the
+                // entity to the player.
+                if (!$player->isOnline()) {
+                    return;
+                }
+                parent::spawnTo($player);
+            }
+        );
     }
 
     public function attack(EntityDamageEvent $source) : void {
@@ -86,9 +108,18 @@ class SkullEntity extends Human implements ChunkListener {
         // This method is called when the chunk was changed by World::setChunk(), which could be the result of e.g. a
         // WorldEdit plugin. So we need to check, whether the entity can still exist on its position or if its
         // supporting skull block was changed during the replacing of the chunk.
-        if (!static::isBlockValid($this->getBlockAtPosition())) {
+        $block = $this->getBlockAtPosition();
+        if (!static::isBlockValid($block)) {
             // It can be despawned as it's supporting skull block is broken.
             $this->flagForDespawn();
+            // As the skull block was broken, we can also remove that row from the database.
+            $position = $block->getPosition();
+            DataProvider::getInstance()->deleteSkullByPosition(
+                $position->world->getFolderName(),
+                $position->x,
+                $position->y,
+                $position->z
+            );
         }
     }
 
@@ -111,9 +142,18 @@ class SkullEntity extends Human implements ChunkListener {
     public function onBlockChanged(Vector3 $block) : void {
         // This method is called when a block is changed with World::setBlockAt(), e.g. when a block is broken by an
         // explosion. That's why we need to check if this entity can still exist on its position.
-        if (!static::isBlockValid($this->getBlockAtPosition())) {
+        $block = $this->getBlockAtPosition();
+        if (!static::isBlockValid($block)) {
             // It can be despawned as it's supporting skull block is broken.
             $this->flagForDespawn();
+            // As the skull block was broken, we can also remove that row from the database.
+            $position = $block->getPosition();
+            DataProvider::getInstance()->deleteSkullByPosition(
+                $position->world->getFolderName(),
+                $position->x,
+                $position->y,
+                $position->z
+            );
         }
     }
 

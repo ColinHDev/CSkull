@@ -6,3 +6,24 @@ api: 4.0.0
 
 author: ColinHDev
 website: https://github.com/ColinHDev
+
+permissions:
+    cskull.command.showskulls:
+        description: "This permission is required to execute the \"/showskulls\" command."
+        default: true
+    cskull.command.skull:
+        description: "This permission is required to execute the \"/skull\" command."
+        default: true
+
+    cskull.cooldown.2628000:
+        description: "Set the cooldown on the \"/skull\" command to one month for a player with this permission."
+        default: false
+    cskull.cooldown.604800:
+        description: "Set the cooldown on the \"/skull\" command to one week for a player with this permission."
+        default: false
+    cskull.cooldown.86400:
+        description: "Set the cooldown on the \"/skull\" command to one day for a player with this permission."
+        default: true
+    cskull.cooldown.none:
+        description: "Disable the cooldown on the \"/skull\" command for a player with this permission."
+        default: op
