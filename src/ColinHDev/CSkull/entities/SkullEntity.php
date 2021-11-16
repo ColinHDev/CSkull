@@ -82,14 +82,18 @@ class SkullEntity extends Human implements ChunkListener {
     }
 
     public function handleSpawn(Player $player, bool $spawn) : void {
-        if ($spawn) {
-            // We don't need to check whether the player should even be able to see the entity or is too far away, as
-            // that is done by Entity::spawnTo().
-            parent::spawnTo($player);
-        } else {
-            // We don't need to check whether the entity is even spawned to the player, as that is done by
-            // Entity::despawnFrom().
-            $this->despawnFrom($player);
+        // We need to make sure that the entity isn't flagged for despawn or already closed, so we don't send an
+        // already destroyed entity.
+        if (!$this->isFlaggedForDespawn() && !$this->isClosed()) {
+            if ($spawn) {
+                // We don't need to check whether the player should even be able to see the entity or is too far away, as
+                // that is done by Entity::spawnTo().
+                parent::spawnTo($player);
+            } else {
+                // We don't need to check whether the entity is even spawned to the player, as that is done by
+                // Entity::despawnFrom().
+                $this->despawnFrom($player);
+            }
         }
     }
 
