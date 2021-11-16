@@ -89,7 +89,7 @@ class SkullEntity extends Human implements ChunkListener {
         } else {
             // We don't need to check whether the entity is even spawned to the player, as that is done by
             // Entity::despawnFrom().
-            parent::despawnFrom($player);
+            $this->despawnFrom($player);
         }
     }
 
