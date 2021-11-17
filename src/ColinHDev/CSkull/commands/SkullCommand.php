@@ -46,7 +46,7 @@ class SkullCommand extends Command {
                             return;
                         }
                         if ($lastCommandUse + $cooldown > time()) {
-                            $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("skull.onCooldown", [strtotime(ResourceManager::getInstance()->translateString("skull.onCooldown.format"), ($lastCommandUse + $cooldown))]));
+                            $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("skull.onCooldown", [date(ResourceManager::getInstance()->translateString("skull.onCooldown.format"), ($lastCommandUse + $cooldown))]));
                             return;
                         }
                     }
@@ -60,7 +60,7 @@ class SkullCommand extends Command {
                         }
                         DataProvider::getInstance()->setLastCommandUse(
                             $sender->getUniqueId()->toString(),
-                            strtotime("Y-m-d H:i:s"),
+                            date("Y-m-d H:i:s"),
                             function (int $affectedRows) use ($sender, $playerName, $item) : void {
                                 if (!$sender->isOnline()) {
                                     return;
