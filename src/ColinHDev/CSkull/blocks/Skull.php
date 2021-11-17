@@ -4,6 +4,7 @@ namespace ColinHDev\CSkull\blocks;
 
 use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\entities\SkullEntity;
+use ColinHDev\CSkull\entities\SkullEntityManager;
 use ColinHDev\CSkull\items\Skull as SkullItem;
 use pocketmine\block\Block;
 use pocketmine\block\Skull as PMMPSkull;
@@ -77,7 +78,7 @@ class Skull extends PMMPSkull {
                     // As explained above, we also need to check, if the block is still valid or also broken while the query
                     // failed.
                     $block = $this->position->world->getBlockAt($this->position->x, $this->position->y, $this->position->z, true, false);
-                    if (SkullEntity::isBlockValid($block)) {
+                    if (SkullEntityManager::isBlockValid($block)) {
                         // We need to set the block to the one we replaced with the skull.
                         $this->position->world->setBlock($this->position, $blockReplace);
                         // And give the player the skull item back, if he is still online.
