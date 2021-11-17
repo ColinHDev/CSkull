@@ -16,33 +16,49 @@ use poggit\libasynql\SqlError;
 
 class SkullEntity extends Human implements ChunkListener {
 
+    /**
+     * The geometry of each skull entity.
+     * It is slightly bigger than the normal player skull geometry (this can be seen at both "inflate" values
+     * (which would be 0 for the first and only 0.5 for the second)). Both head layers are in comparison to the
+     * vanilla values, expanded by 0.75. This was done because otherwise, the skull block under the entity would be
+     * partly visible, especially in those places where there is no second head layer. So we increase the size of the
+     * geometry so that the skull block below is never visible and will always be hidden underneath the entity.
+     */
     public const GEOMETRY =
         '{
 	        "geometry.skullEntity": {
 		        "texturewidth": 64,
 		        "textureheight": 64,
-		        "visible_bounds_width": 2,
-		        "visible_bounds_height": 1,
-		        "visible_bounds_offset": [0, 0.5, 0],
 		        "bones": [{
-				                "name": "head",
-				                "pivot": [0, 0, 0],
-				                "cubes": [
-					                {"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [0, 0], "inflate": 0.75},
-					                {"origin": [-4, 0.5, -4], "size": [8, 8, 8], "uv": [32, 0], "inflate": 1.25}
-				                ]
+				    "name": "head",
+				    "pivot": [0, 0, 0],
+				    "cubes": [
+					    {
+					        "origin": [-4, 0.5, -4], 
+					        "size": [8, 8, 8], 
+					        "uv": [0, 0], 
+					        "inflate": 0.75
+					    },
+					    {
+					        "origin": [-4, 0.5, -4], 
+					        "size": [8, 8, 8], 
+					        "uv": [32, 0], 
+					        "inflate": 1.25
+					    }
+				    ]
 			    }]
 	        }
         }';
 
     public function initEntity(CompoundTag $nbt) : void {
         parent::initEntity($nbt);
-        $this->setMaxHealth(1);
 
+        // We don't want the entity to be saved to disk so that we can respawn it whenever its chunk is loaded.
         $this->setCanSaveWithChunk(false);
-        $this->setImmobile(true);
-        $this->setHasGravity(false);
 
+        // The entity is meant to give the illusion of implementing player skulls, the way Minecraft Java Edition
+        // has them, on the server. So we don't want the entity to give any sign of being something apart from a block,
+        // which includes not showing nametags.
         $this->setNameTagVisible(false);
         $this->setNameTagAlwaysVisible(false);
 
@@ -50,6 +66,9 @@ class SkullEntity extends Human implements ChunkListener {
     }
 
     protected function getInitialSizeInfo() : EntitySizeInfo {
+        // We set the height and width to 0.0 so that the entity has no hitbox which could make it difficult for
+        // players to break the underlying skull block.
+        // This would be extra worse since the entity's geometry is slightly bigger than the skull block itself.
         return new EntitySizeInfo(0.0, 0.0);
     }
 
@@ -74,6 +93,11 @@ class SkullEntity extends Human implements ChunkListener {
         );
     }
 
+    /**
+     * This method is used especially for spawning / despawning entities after a query was executed, and has built-in
+     * checks to ensure that the entity for example wasn't closed during the query.
+     * Although this could be implemented without an extra method, it reduces code duplication in various places.
+     */
     public function handleSpawn(Player $player, bool $spawn) : void {
         // We need to make sure that the entity isn't flagged for despawn or already closed, so we don't send an
         // already destroyed entity.
@@ -94,12 +118,23 @@ class SkullEntity extends Human implements ChunkListener {
         $source->cancel();
     }
 
+    /**
+     * This method overwrites Entity::hasMovementUpdate() and therefore disables the entire movement, including gravity,
+     * collision with other entities and the movement through water or explosions. So we need this method to make our
+     * entities completely immobile.
+     */
     public function hasMovementUpdate() : bool {
         return false;
     }
 
     public function flagForDespawn() : void {
         parent::flagForDespawn();
+        // Calling this in Entity::flagForDespawn() instead of Entity::close() (is final anyway) could normally result
+        // in a problem, where closed entities would still be listed inside the SkullEntityManager, which would need to
+        // be manually filtered out, since when a world unloads, it only closes its entities without calling this method.
+        // But since all our skull entities are registered as chunk listeners for their chunks,
+        // ChunkListener::onChunkUnloaded() is called before Entity::close(), so we won't have any problems with
+        // closed entities in the SkullEntityManager.
         SkullEntityManager::getInstance()->removeSkullEntity($this);
     }
 
