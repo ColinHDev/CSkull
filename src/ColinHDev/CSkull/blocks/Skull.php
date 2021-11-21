@@ -48,8 +48,7 @@ class Skull extends PMMPSkull {
             try {
                 $playerUUID = $nbt->getString("PlayerUUID");
                 $playerName = $nbt->getString("PlayerName");
-                $skinDataEncoded = $nbt->getByteArray("SkinData");
-                $skinData = base64_decode($skinDataEncoded);
+                $skinData = $nbt->getByteArray("SkinData");
             } catch (UnexpectedTagTypeException | NoSuchTagException) {
                 return true;
             }
@@ -67,13 +66,13 @@ class Skull extends PMMPSkull {
                 $this->position->y,
                 $this->position->z,
                 $playerUUID,
-                $skinDataEncoded,
+                $skinData,
                 function (int $insertId, int $affectedRows) : void {
                     // We could also spawn the entity here when the query succeeded, but that would result in problems
                     // with Skull::getSkullEntity() and therefore Skull::getDrops(), because the block could be tried
                     // to destroy while the query is still executed.
                 },
-                function (SqlError $error) use ($player, $skullEntity, $blockReplace, $playerUUID, $playerName, $skinDataEncoded) : void {
+                function (SqlError $error) use ($player, $skullEntity, $blockReplace, $playerUUID, $playerName, $skinData) : void {
                     // The query failed, so we need to undo the placement of this skull.
                     // As explained above, we also need to check, if the block is still valid or also broken while the query
                     // failed.
@@ -83,7 +82,7 @@ class Skull extends PMMPSkull {
                         $this->position->world->setBlock($this->position, $blockReplace);
                         // And give the player the skull item back, if he is still online.
                         if ($player->isOnline()) {
-                            $player->getInventory()->addItem(SkullItem::fromData($playerUUID, $playerName, $skinDataEncoded));
+                            $player->getInventory()->addItem(SkullItem::fromData($playerUUID, $playerName, $skinData));
                         }
                     }
                     // We also need to despawn the entity, if it isn't already.

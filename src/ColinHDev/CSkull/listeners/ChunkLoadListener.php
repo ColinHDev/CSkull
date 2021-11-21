@@ -52,7 +52,7 @@ class ChunkLoadListener implements Listener {
                             $block->getEntityYaw(),
                             0.0
                         );
-                        $skullEntity = new SkullEntity($location, $row["playerUUID"], $row["playerName"], base64_decode($row["skinData"]));
+                        $skullEntity = new SkullEntity($location, $row["playerUUID"], $row["playerName"], $row["skinData"]);
                         $skullEntity->spawnToAll();
                         continue;
                     }

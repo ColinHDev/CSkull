@@ -13,7 +13,7 @@ class PlayerLoginListener implements Listener {
         DataProvider::getInstance()->setSkinData(
             $player->getUniqueId()->toString(),
             $player->getName(),
-            base64_encode($player->getSkin()->getSkinData())
+            $player->getSkin()->getSkinData()
         );
     }
 }
