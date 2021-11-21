@@ -30,17 +30,17 @@ class Skull extends PMMPSkull {
     /**
      * Get the skull item of the provided player.
      */
-    public static function fromPlayer(Player $player) : static {
+    public static function fromPlayer(Player $player) : self {
         return static::fromData($player->getUniqueId()->toString(), $player->getName(), $player->getSkin()->getSkinData());
     }
 
     /**
      * Get the skull item of the provided player data.
      */
-    public static function fromData(string $playerUUID, string $playerName, string $skinData) : static {
+    public static function fromData(string $playerUUID, string $playerName, string $skinData) : self {
         // We get the skull item from the Itemfactory because @link VanillaItems::PLAYER_HEAD() would just return an
         // instance of PocketMine-MP's and not our skull item.
-        /** @var static $item */
+        /** @var self $item */
         $item = ItemFactory::getInstance()->get(ItemIds::SKULL, SkullType::PLAYER()->getMagicNumber());
         // We get the item's nbt data to store the player's UUID, name and skin data in it.
         // The nbt data should be empty anyway, but just to be sure, we fetch it from the item instead of
