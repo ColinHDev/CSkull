@@ -6,6 +6,8 @@ use ColinHDev\CSkull\DataProvider;
 use pocketmine\block\Block;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
+use pocketmine\entity\Location;
+use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -24,7 +26,7 @@ class SkullEntity extends Human implements ChunkListener {
      * partly visible, especially in those places where there is no second head layer. So we increase the size of the
      * geometry so that the skull block below is never visible and will always be hidden underneath the entity.
      */
-    public const GEOMETRY =
+    private const GEOMETRY =
         '{
 	        "geometry.skullEntity": {
 		        "texturewidth": 64,
@@ -50,6 +52,19 @@ class SkullEntity extends Human implements ChunkListener {
 	        }
         }';
 
+    private string $playerUUID;
+    private string $playerName;
+
+    public function __construct(Location $location, string $playerUUID, string $playerName, string $skinData) {
+        $this->playerUUID = $playerUUID;
+        $this->playerName = $playerName;
+        parent::__construct(
+            $location,
+            new Skin($playerUUID, $skinData, "", "geometry.skullEntity", SkullEntity::GEOMETRY)
+        );
+        SkullEntityManager::getInstance()->addSkullEntity($this);
+    }
+
     public function initEntity(CompoundTag $nbt) : void {
         parent::initEntity($nbt);
 
@@ -61,8 +76,6 @@ class SkullEntity extends Human implements ChunkListener {
         // which includes not showing nametags.
         $this->setNameTagVisible(false);
         $this->setNameTagAlwaysVisible(false);
-
-        SkullEntityManager::getInstance()->addSkullEntity($this);
     }
 
     protected function getInitialSizeInfo() : EntitySizeInfo {
@@ -70,6 +83,14 @@ class SkullEntity extends Human implements ChunkListener {
         // players to break the underlying skull block.
         // This would be extra worse since the entity's geometry is slightly bigger than the skull block itself.
         return new EntitySizeInfo(0.0, 0.0);
+    }
+
+    public function getPlayerUUID() : string {
+        return $this->playerUUID;
+    }
+
+    public function getPlayerName() : string {
+        return $this->playerName;
     }
 
     public function spawnTo(Player $player) : void {

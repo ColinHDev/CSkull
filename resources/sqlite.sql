@@ -50,7 +50,11 @@ WHERE playerUUID = :playerUUID;
 -- #      :worldName string
 -- #      :chunkX int
 -- #      :chunkZ int
-SELECT *
+SELECT *, (
+    SELECT players.playerName
+    FROM players
+    WHERE players.playerUUID = skulls.playerUUID
+) as playerName
 FROM skulls
 WHERE worldName = :worldName AND (x >> 4) = :chunkX AND (z >> 4) = :chunkZ;
 -- #    }

@@ -84,7 +84,7 @@ class DataProvider {
             [
                 "playerUUID" => $playerUUID,
                 "playerName" => $playerName,
-                "skinData" => base64_encode($skinData)
+                "skinData" => $skinData
             ],
             $onSuccess,
             $onFailure

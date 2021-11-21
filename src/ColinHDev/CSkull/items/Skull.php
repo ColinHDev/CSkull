@@ -21,14 +21,15 @@ class Skull extends PMMPSkull {
     }
 
     public static function fromPlayer(Player $player) : Skull {
-        return static::fromData($player->getUniqueId()->toString(), $player->getSkin()->getSkinData());
+        return static::fromData($player->getUniqueId()->toString(), $player->getName(), $player->getSkin()->getSkinData());
     }
 
-    public static function fromData(string $playerUUID, string $skinData) : Skull {
+    public static function fromData(string $playerUUID, string $playerName, string $skinData) : Skull {
         /** @var Skull $item */
         $item = ItemFactory::getInstance()->get(ItemIds::SKULL, SkullType::PLAYER()->getMagicNumber());
         $nbt = $item->getNamedTag();
         $nbt->setString("PlayerUUID", $playerUUID);
+        $nbt->setString("PlayerName", $playerName);
         $nbt->setByteArray("SkinData", $skinData);
         $item->setNamedTag($nbt);
         return $item;

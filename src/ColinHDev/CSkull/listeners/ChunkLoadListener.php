@@ -7,7 +7,6 @@ use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\entities\SkullEntity;
 use ColinHDev\CSkull\entities\SkullEntityManager;
 use pocketmine\entity\Location;
-use pocketmine\entity\Skin;
 use pocketmine\event\Listener;
 use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\world\ChunkLockId;
@@ -53,8 +52,7 @@ class ChunkLoadListener implements Listener {
                             $block->getEntityYaw(),
                             0.0
                         );
-                        $skin = new Skin($row["playerUUID"], $row["skinData"], "", "geometry.skullEntity", SkullEntity::GEOMETRY);
-                        $skullEntity = new SkullEntity($location, $skin);
+                        $skullEntity = new SkullEntity($location, $row["playerUUID"], $row["playerName"], base64_decode($row["skinData"]));
                         $skullEntity->spawnToAll();
                         continue;
                     }
