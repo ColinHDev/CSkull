@@ -3,6 +3,7 @@
 namespace ColinHDev\CSkull\items;
 
 use ColinHDev\CSkull\blocks\Skull as SkullBlock;
+use ColinHDev\CSkull\ResourceManager;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
@@ -11,6 +12,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\Skull as PMMPSkull;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 
 class Skull extends PMMPSkull {
 
@@ -32,6 +34,14 @@ class Skull extends PMMPSkull {
         $nbt->setString("PlayerName", $playerName);
         $nbt->setByteArray("SkinData", $skinData);
         $item->setNamedTag($nbt);
+        $itemName = ResourceManager::getInstance()->translateString("skullItem.name", [$playerName]);
+        if ($itemName !== "") {
+            $item->setCustomName($itemName);
+        }
+        $itemLore = ResourceManager::getInstance()->translateString("skullItem.lore", [$playerName]);
+        if ($itemLore !== "") {
+            $item->setLore(explode(TextFormat::EOL, $itemLore));
+        }
         return $item;
     }
 }
