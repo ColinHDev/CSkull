@@ -116,7 +116,7 @@ class SkullCommand extends Command {
                                         $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("skull.playerNotFound", [$playerName]));
                                         return;
                                     }
-                                    $item = Skull::fromData($foundRow["playerUUID"], $foundRow["playerUUID"], base64_decode($foundRow["skinData"]));
+                                    $item = Skull::fromData($foundRow["playerUUID"], $foundRow["playerUUID"], $foundRow["skinData"]);
                                     $done($sender, $item, $foundRow[$playerName]);
                                 },
                                 function (SqlError $error) use ($sender) : void {

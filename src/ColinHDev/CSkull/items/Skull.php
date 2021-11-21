@@ -21,7 +21,7 @@ class Skull extends PMMPSkull {
     }
 
     public static function fromPlayer(Player $player) : Skull {
-        return static::fromData($player->getUniqueId()->toString(), $player->getName(), $player->getSkin()->getSkinData());
+        return static::fromData($player->getUniqueId()->toString(), $player->getName(), base64_encode($player->getSkin()->getSkinData()));
     }
 
     public static function fromData(string $playerUUID, string $playerName, string $skinData) : Skull {
