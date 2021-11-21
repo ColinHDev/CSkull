@@ -117,7 +117,7 @@ class SkullCommand extends Command {
                                         return;
                                     }
                                     $item = Skull::fromData($foundRow["playerUUID"], $foundRow["playerUUID"], $foundRow["skinData"]);
-                                    $done($sender, $item, $foundRow[$playerName]);
+                                    $done($sender, $item, $foundRow["playerName"]);
                                 },
                                 function (SqlError $error) use ($sender) : void {
                                 }
