@@ -95,7 +95,7 @@ class SkullCommand extends Command {
                                     $foundRow = null;
                                     $delta = PHP_INT_MAX;
                                     foreach ($rows as $row) {
-                                        if (stripos($playerName, $row["playerName"]) === 0) {
+                                        if (stripos($row["playerName"], $playerName) === 0) {
                                             // The length of the player name subtracted by the length of the provided name
                                             // equals to the number of characters the player name is longer.
                                             $curDelta = strlen($row["playerName"]) - strlen($playerName);
