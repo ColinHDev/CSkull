@@ -95,21 +95,19 @@ class SkullCommand extends Command {
                                     $foundRow = null;
                                     $delta = PHP_INT_MAX;
                                     foreach ($rows as $row) {
-                                        if (stripos($row["playerName"], $playerName) === 0) {
-                                            // The length of the player name subtracted by the length of the provided name
-                                            // equals to the number of characters the player name is longer.
-                                            $curDelta = strlen($row["playerName"]) - strlen($playerName);
-                                            // Only replace our found row if the current row is a better match than the
-                                            // already found row.
-                                            if ($curDelta < $delta) {
-                                                $foundRow = $row;
-                                                $delta = $curDelta;
-                                            }
-                                            // If that number equals 0, we have a perfect match and can break, as we found
-                                            // the player.
-                                            if ($curDelta === 0) {
-                                                break;
-                                            }
+                                        // The length of the player name subtracted by the length of the provided name
+                                        // equals to the number of characters the player name is longer.
+                                        $curDelta = strlen($row["playerName"]) - strlen($playerName);
+                                        // Only replace our found row if the current row is a better match than the
+                                        // already found row.
+                                        if ($curDelta < $delta) {
+                                            $foundRow = $row;
+                                            $delta = $curDelta;
+                                        }
+                                        // If that number equals 0, we have a perfect match and can break, as we found
+                                        // the player.
+                                        if ($curDelta === 0) {
+                                            break;
                                         }
                                     }
                                     if ($foundRow === null) {
