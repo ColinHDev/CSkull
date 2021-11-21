@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS skulls(
 -- #  { get
 -- #    { playerByPrefix
 -- #      :playerPrefix string
-SELECT playerUUID, skinData
+SELECT playerUUID, playerName, skinData
 FROM players
 WHERE playerName LIKE :playerPrefix;
 -- #    }
