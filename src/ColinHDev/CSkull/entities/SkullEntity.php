@@ -71,6 +71,12 @@ class SkullEntity extends Human implements ChunkListener {
         parent::initEntity($nbt);
 
         // We don't want the entity to be saved to disk so that we can respawn it whenever its chunk is loaded.
+        // We do that because if the server would start without the plugin being enabled, our entities wouldn't be
+        // registered. If chunks, that have our entities inside of them are loaded then, these entities would be
+        // deleted and for each, a warning in the console would be displayed, which could spam the console if it's a
+        // chunk with many skulls. So our way with creating the entities when the chunk loads, neither spams the
+        // console if you don't want to use the plugin anymore nor does it delete your existing skulls if the plugin
+        // couldn't be loaded.
         $this->setCanSaveWithChunk(false);
 
         // The entity is meant to give the illusion of implementing player skulls, the way Minecraft Java Edition
