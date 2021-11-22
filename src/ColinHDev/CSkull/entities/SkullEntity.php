@@ -150,6 +150,14 @@ class SkullEntity extends Human implements ChunkListener {
         return false;
     }
 
+    /**
+     * We need to overwrite this method to set the return to false because otherwise some blocks like fences
+     * couldn't be placed when trying to click under the entity.
+     */
+    public function canBeCollidedWith() : bool {
+        return false;
+    }
+
     public function flagForDespawn() : void {
         parent::flagForDespawn();
         // Calling this in Entity::flagForDespawn() instead of Entity::close() (is final anyway) could normally result
