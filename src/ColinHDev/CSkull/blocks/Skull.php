@@ -122,13 +122,24 @@ class Skull extends PMMPSkull {
             case Facing::EAST:
                 return 270.0;
             default:
-                // 360° / 16 (rotation states) = 22.5°
-                $angle = 22.5 * $this->rotation;
-                $angle += 180;
-                if ($angle >= 360) {
-                    $angle -= 360;
-                }
-                return $angle;
+                // Nothing guarantees that the rotation will always be between 0 and 15 and won't accept values like
+                // for example -4, which would equal a rotation of 12, like real angles work
+                // (-90° = 270°, -0.5 * π = 1.5 * π).
+                // To encounter that, we first use modulo 16 on the actual rotation, which will always result in a
+                // value between -16 and 15, or -16 and -1 and 0 and 15, to be more precise.
+                // Since we don't want the negative values, we add 16 and use again modulo 16, in case the values were
+                // already positive and are now again above 15. The modulo does not affect our previously negative
+                // values, since they are now already in the range between 0 and 15.
+                $baseRotation = (($this->rotation % 16) + 16) % 16;
+                // First, we multiply by 22.5°, since we have 16 possible rotations (360° / 16 = 22.5°), to get the angle.
+                // But that only gives us the angle in the opposite direction, so we add 180° to get the correct angle.
+                $angle = ($baseRotation * 22.5) + 180;
+                // We want an angle between 0° and 360° (360° excluded) but by adding 180° we could have gone over that
+                // range, so we use modulo of 360, to get the angle within the boundaries of that range.
+                // We use the fmod() function instead of the modulo operator like before, since the modulo operator only
+                // works with integers, which is fine for the rotations that are integer values, but not for an angle,
+                // which is a float value.
+                return fmod($angle, 360);
         }
     }
 
