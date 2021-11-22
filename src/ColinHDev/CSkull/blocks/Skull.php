@@ -31,11 +31,11 @@ class Skull extends PMMPSkull {
         if ($this->skullType === SkullType::PLAYER()) {
             $skullEntity = $this->getSkullEntity();
             if ($skullEntity !== null) {
-                $nbt = $item->getNamedTag();
-                $nbt->setString("PlayerUUID", $skullEntity->getPlayerUUID());
-                $nbt->setString("PlayerName", $skullEntity->getPlayerName());
-                $nbt->setByteArray("SkinData", $skullEntity->getSkin()->getSkinData());
-                $item->setNamedTag($nbt);
+                $item = SkullItem::fromData(
+                    $skullEntity->getPlayerUUID(),
+                    $skullEntity->getPlayerName(),
+                    $skullEntity->getSkin()->getSkinData()
+                );
             }
         }
         return $item;
