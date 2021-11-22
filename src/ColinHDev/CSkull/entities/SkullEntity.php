@@ -11,6 +11,8 @@ use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\format\Chunk;
@@ -157,6 +159,14 @@ class SkullEntity extends Human implements ChunkListener {
         // ChunkListener::onChunkUnloaded() is called before Entity::close(), so we won't have any problems with
         // closed entities in the SkullEntityManager.
         SkullEntityManager::getInstance()->removeSkullEntity($this);
+    }
+
+    protected function syncNetworkData(EntityMetadataCollection $properties) : void {
+        parent::syncNetworkData($properties);
+        // We need to overwrite that flag since PocketMine-MP hardcoded this value to true.
+        // The problem is that this resulted in a visual (client-side) glitch where the entity was a quarter of a
+        // block away from its supposed position when placed on fences.
+        $properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, false);
     }
 
     public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void {
