@@ -100,12 +100,11 @@ class Skull extends PMMPSkull {
      */
     public function getFacingDependentPosition() : Position {
         $vector3 = match ($this->facing) {
-            Facing::UP => $this->position->add(0.5, 0, 0.5),
             Facing::NORTH => $this->position->add(0.5, 0.25, 0.75),
             Facing::SOUTH => $this->position->add(0.5, 0.25, 0.25),
             Facing::WEST => $this->position->add(0.75, 0.25, 0.5),
             Facing::EAST => $this->position->add(0.25, 0.25, 0.5),
-            default => $this->position->asVector3()
+            default => $this->position->add(0.5, 0, 0.5)
         };
         return Position::fromObject($vector3, $this->position->getWorld());
     }
