@@ -99,11 +99,19 @@ class Skull extends PMMPSkull {
      *
      */
     public function getFacingDependentPosition() : Position {
+        // Skull blocks have a unique behaviour when being faced in any direction, except @link Facing::UP, where the
+        // block itself is not aligned with its hitbox by the sixth of a pixel (1 / 16 / 6 = 1 / 96) in the
+        // direction the block is facing.
         $vector3 = match ($this->facing) {
-            Facing::NORTH => $this->position->add(0.5, 0.25, 0.75),
-            Facing::SOUTH => $this->position->add(0.5, 0.25, 0.25),
-            Facing::WEST => $this->position->add(0.75, 0.25, 0.5),
-            Facing::EAST => $this->position->add(0.25, 0.25, 0.5),
+            // Subtract 1 / 96 from the z coordinate, since the block is offset by 1 / 96 towards @link Facing::NORTH (negative z).
+            Facing::NORTH => $this->position->add(0.5, 0.25, 0.75 - (1 / 96)),
+            // Add 1 / 96 to the z coordinate, since the block is offset by 1 / 96 towards @link Facing::SOUTH (positive z).
+            Facing::SOUTH => $this->position->add(0.5, 0.25, 0.25 + (1 / 96)),
+            // Subtract 1 / 96 from the x coordinate, since the block is offset by 1 / 96 towards @link Facing::WEST (negative x).
+            Facing::WEST => $this->position->add(0.75 - (1 / 96), 0.25, 0.5),
+            // Add 1 / 96 to the x coordinate, since the block is offset by 1 / 96 towards @link Facing::EAST (positive x).
+            Facing::EAST => $this->position->add(0.25 + (1 / 96), 0.25, 0.5),
+            // The block's facing is @link Facing::UP and therefore the block and its hitbox aren't offset by 1 / 96.
             default => $this->position->add(0.5, 0, 0.5)
         };
         return Position::fromObject($vector3, $this->position->getWorld());
