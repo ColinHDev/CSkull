@@ -5,7 +5,6 @@ namespace ColinHDev\CSkull;
 use ColinHDev\CSkull\blocks\Skull as SkullBlock;
 use ColinHDev\CSkull\commands\ShowSkullsCommand;
 use ColinHDev\CSkull\commands\SkullCommand;
-use ColinHDev\CSkull\entities\SkullEntity;
 use ColinHDev\CSkull\items\Skull as SkullItem;
 use ColinHDev\CSkull\listeners\ChunkLoadListener;
 use ColinHDev\CSkull\listeners\EntityEffectAddListener;
@@ -13,16 +12,11 @@ use ColinHDev\CSkull\listeners\PlayerLoginListener;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\entity\EntityDataHelper;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\Human;
 use pocketmine\event\Listener;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ItemIds;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\PluginBase;
-use pocketmine\world\World;
 
 class CSkull extends PluginBase implements Listener {
 
@@ -55,14 +49,6 @@ class CSkull extends PluginBase implements Listener {
                 true
             );
         }
-
-        EntityFactory::getInstance()->register(
-            SkullEntity::class,
-            function (World $world, CompoundTag $nbt) : SkullEntity {
-                return new SkullEntity(EntityDataHelper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
-            },
-            ["SkullEntity"]
-        );
     }
 
     public function onEnable() : void {
