@@ -22,6 +22,14 @@ use poggit\libasynql\SqlError;
 
 class Skull extends PMMPSkull {
 
+    /**
+     * @var float
+     * This constant stores the value of the offset between the skull block and its hitbox when it's facing in any
+     * direction except @link Facing::UP.
+     * The offset equals the sixth of a pixel (1 / 16 / 6 = 1 / 96).
+     */
+    private const BLOCK_OFFSET = 1 / 96;
+
     public function getDrops(Item $item) : array {
         return [$this->asItem()];
     }
@@ -104,13 +112,13 @@ class Skull extends PMMPSkull {
         // direction the block is facing.
         $vector3 = match ($this->facing) {
             // Subtract 1 / 96 from the z coordinate, since the block is offset by 1 / 96 towards @link Facing::NORTH (negative z).
-            Facing::NORTH => $this->position->add(0.5, 0.25, 0.75 - (1 / 96)),
+            Facing::NORTH => $this->position->add(0.5, 0.25, 0.75 - self::BLOCK_OFFSET),
             // Add 1 / 96 to the z coordinate, since the block is offset by 1 / 96 towards @link Facing::SOUTH (positive z).
-            Facing::SOUTH => $this->position->add(0.5, 0.25, 0.25 + (1 / 96)),
+            Facing::SOUTH => $this->position->add(0.5, 0.25, 0.25 + self::BLOCK_OFFSET),
             // Subtract 1 / 96 from the x coordinate, since the block is offset by 1 / 96 towards @link Facing::WEST (negative x).
-            Facing::WEST => $this->position->add(0.75 - (1 / 96), 0.25, 0.5),
+            Facing::WEST => $this->position->add(0.75 - self::BLOCK_OFFSET, 0.25, 0.5),
             // Add 1 / 96 to the x coordinate, since the block is offset by 1 / 96 towards @link Facing::EAST (positive x).
-            Facing::EAST => $this->position->add(0.25 + (1 / 96), 0.25, 0.5),
+            Facing::EAST => $this->position->add(0.25 + self::BLOCK_OFFSET, 0.25, 0.5),
             // The block's facing is @link Facing::UP and therefore the block and its hitbox aren't offset by 1 / 96.
             default => $this->position->add(0.5, 0, 0.5)
         };
