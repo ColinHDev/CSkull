@@ -24,9 +24,11 @@ class SkullEntity extends Human implements ChunkListener {
      * The geometry of each skull entity.
      * It is slightly bigger than the normal player skull geometry (this can be seen at both "inflate" values
      * (which would be 0 for the first and only 0.5 for the second)). Both head layers are in comparison to the
-     * vanilla values, expanded by 0.75. This was done because otherwise, the skull block under the entity would be
+     * vanilla values, expanded by @link SkullEntity::INFLATE_GEOMETRY. This was done because otherwise, the skull block under the entity would be
      * partly visible, especially in those places where there is no second head layer. So we increase the size of the
      * geometry so that the skull block below is never visible and will always be hidden underneath the entity.
+     * By setting @link SkullEntity::INFLATE_GEOMETRY to 0.3 and moving the geometry upwards with the y origin value of
+     * 0.125, we get the perfect result, where the entity's size is only slightly bigger than the hitbox of the skull block.
      */
     private const GEOMETRY =
         '{
@@ -38,21 +40,22 @@ class SkullEntity extends Human implements ChunkListener {
 				    "pivot": [0, 0, 0],
 				    "cubes": [
 					    {
-					        "origin": [-4, 0.5, -4], 
+					        "origin": [-4, 0.125, -4], 
 					        "size": [8, 8, 8], 
 					        "uv": [0, 0], 
-					        "inflate": 0.75
+					        "inflate": ' . self::INFLATE_GEOMETRY . '
 					    },
 					    {
-					        "origin": [-4, 0.5, -4], 
+					        "origin": [-4, 0.125, -4],
 					        "size": [8, 8, 8], 
 					        "uv": [32, 0], 
-					        "inflate": 1.25
+					        "inflate": ' . (0.5 + self::INFLATE_GEOMETRY) . '
 					    }
 				    ]
 			    }]
 	        }
         }';
+    private const INFLATE_GEOMETRY = 0.3;
 
     private string $playerUUID;
     private string $playerName;
