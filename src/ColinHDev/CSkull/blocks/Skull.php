@@ -161,9 +161,6 @@ class Skull extends PMMPSkull {
             return null;
         }
         $skullEntity = $this->position->getWorld()->getNearestEntity($this->getFacingDependentPosition(), 0.25, SkullEntity::class);
-        if ($skullEntity instanceof SkullEntity) {
-            return $skullEntity;
-        }
-        return null;
+        return $skullEntity instanceof SkullEntity ? $skullEntity : null;
     }
 }
