@@ -60,13 +60,7 @@ class Skull extends PMMPSkull {
             } catch (UnexpectedTagTypeException | NoSuchTagException) {
                 return true;
             }
-            $location = Location::fromObject(
-                $this->getFacingDependentPosition()->asVector3(),
-                $this->position->world,
-                $this->getEntityYaw(),
-                0.0
-            );
-            $skullEntity = new SkullEntity($location, $playerUUID, $playerName, $skinData);
+            $skullEntity = new SkullEntity($this->getFacingDependentLocation(), $playerUUID, $playerName, $skinData);
             $skullEntity->spawnToAll();
             DataProvider::getInstance()->setSkull(
                 $this->position->world->getFolderName(),
@@ -126,16 +120,20 @@ class Skull extends PMMPSkull {
     }
 
 
-    public function getEntityYaw() : float {
+    public function getFacingDependentLocation() : Location {
         switch ($this->facing) {
             case Facing::NORTH:
-                return 180.0;
+                $yaw = 180.0;
+                break;
             case Facing::SOUTH:
-                return 0.0;
+                $yaw = 0.0;
+                break;
             case Facing::WEST:
-                return 90.0;
+                $yaw = 90.0;
+                break;
             case Facing::EAST:
-                return 270.0;
+                $yaw = 270.0;
+                break;
             default:
                 // Nothing guarantees that the rotation will always be between 0 and 15 and won't accept values like
                 // for example -4, which would equal a rotation of 12, like real angles work
@@ -154,8 +152,9 @@ class Skull extends PMMPSkull {
                 // We use the fmod() function instead of the modulo operator like before, since the modulo operator only
                 // works with integers, which is fine for the rotations that are integer values, but not for an angle,
                 // which is a float value.
-                return fmod($angle, 360);
+                $yaw = fmod($angle, 360);
         }
+        return Location::fromObject($this->getFacingDependentPosition(), $this->position->getWorld(), $yaw, 0.0);
     }
 
     public function getSkullEntity() : ?SkullEntity {

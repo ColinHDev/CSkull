@@ -6,7 +6,6 @@ use ColinHDev\CSkull\blocks\Skull;
 use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\entities\SkullEntity;
 use ColinHDev\CSkull\entities\SkullEntityManager;
-use pocketmine\entity\Location;
 use pocketmine\event\Listener;
 use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\world\ChunkLockId;
@@ -46,13 +45,7 @@ class ChunkLoadListener implements Listener {
                     if (SkullEntityManager::isBlockValid($block)) {
                         // We need the block to get the respective location of the entity.
                         /** @var Skull $block */
-                        $location = Location::fromObject(
-                            $block->getFacingDependentPosition()->asVector3(),
-                            $world,
-                            $block->getEntityYaw(),
-                            0.0
-                        );
-                        $skullEntity = new SkullEntity($location, $row["playerUUID"], $row["playerName"], $row["skinData"]);
+                        $skullEntity = new SkullEntity($block->getFacingDependentLocation(), $row["playerUUID"], $row["playerName"], $row["skinData"]);
                         $skullEntity->spawnToAll();
                         continue;
                     }
