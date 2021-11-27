@@ -60,6 +60,9 @@ class Skull extends PMMPSkull {
             } catch (UnexpectedTagTypeException | NoSuchTagException) {
                 return true;
             }
+            // We could also spawn the entity when the query succeeded so we would not need to despawn the entity again
+            // if the query failed, but that would result in problems with getSkullEntity() and therefore getDrops(),
+            // because the block could be tried to destroy while the query is still executed.
             $skullEntity = new SkullEntity($this->getFacingDependentLocation(), $playerUUID, $playerName, $skinData);
             $skullEntity->spawnToAll();
             DataProvider::getInstance()->setSkull(
@@ -69,11 +72,7 @@ class Skull extends PMMPSkull {
                 $this->position->z,
                 $playerUUID,
                 $skinData,
-                function (int $insertId, int $affectedRows) : void {
-                    // We could also spawn the entity here when the query succeeded, but that would result in problems
-                    // with Skull::getSkullEntity() and therefore Skull::getDrops(), because the block could be tried
-                    // to destroy while the query is still executed.
-                },
+                null,
                 function (SqlError $error) use ($player, $skullEntity, $blockReplace, $playerUUID, $playerName, $skinData) : void {
                     // The query failed, so we need to undo the placement of this skull.
                     // As explained above, we also need to check, if the block is still valid or also broken while the query
