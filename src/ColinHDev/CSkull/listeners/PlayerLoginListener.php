@@ -11,7 +11,7 @@ class PlayerLoginListener implements Listener {
     public function onPlayerLogin(PlayerLoginEvent $event) : void {
         $player = $event->getPlayer();
         DataProvider::getInstance()->setSkinData(
-            $player->getUniqueId()->toString(),
+            $player->getUniqueId()->getBytes(),
             $player->getName(),
             $player->getSkin()->getSkinData()
         );

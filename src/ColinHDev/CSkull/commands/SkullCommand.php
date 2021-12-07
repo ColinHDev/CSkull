@@ -34,7 +34,7 @@ class SkullCommand extends Command {
         }
 
         DataProvider::getInstance()->getLastCommandUseByUUID(
-            $sender->getUniqueId()->toString(),
+            $sender->getUniqueId()->getBytes(),
             function (array $rows) use ($sender, $args) : void {
                 if ($sender->isOnline()) {
                     $lastCommandUseString = $rows[array_key_first($rows)]["lastCommandUse"];
@@ -59,7 +59,7 @@ class SkullCommand extends Command {
                             return;
                         }
                         DataProvider::getInstance()->setLastCommandUse(
-                            $sender->getUniqueId()->toString(),
+                            $sender->getUniqueId()->getBytes(),
                             date("Y-m-d H:i:s"),
                             function (int $affectedRows) use ($sender, $playerName, $item) : void {
                                 if (!$sender->isOnline()) {

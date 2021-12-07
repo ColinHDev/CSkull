@@ -107,7 +107,7 @@ class SkullEntity extends Human implements ChunkListener {
     public function spawnTo(Player $player) : void {
         // Before spawning the entity to the player, we need to check whether he wants to see them or not.
         DataProvider::getInstance()->getShowSkullsByUUID(
-            $player->getUniqueId()->toString(),
+            $player->getUniqueId()->getBytes(),
             function (array $rows) use ($player) : void {
                 if (!$player->isOnline()) {
                     return;

@@ -31,7 +31,7 @@ class Skull extends PMMPSkull {
      * Get the skull item of the provided player.
      */
     public static function fromPlayer(Player $player) : self {
-        return static::fromData($player->getUniqueId()->toString(), $player->getName(), $player->getSkin()->getSkinData());
+        return static::fromData($player->getUniqueId()->getBytes(), $player->getName(), $player->getSkin()->getSkinData());
     }
 
     /**

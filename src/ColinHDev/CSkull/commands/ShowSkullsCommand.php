@@ -39,7 +39,7 @@ class ShowSkullsCommand extends Command {
 
         if (!isset($args[0])) {
             DataProvider::getInstance()->getShowSkullsByUUID(
-                $sender->getUniqueId()->toString(),
+                $sender->getUniqueId()->getBytes(),
                 function (array $rows) use ($sender) : void {
                     if (!$sender->isOnline()) {
                         return;
@@ -70,7 +70,7 @@ class ShowSkullsCommand extends Command {
                 return;
             }
             DataProvider::getInstance()->setShowSkulls(
-                $sender->getUniqueId()->toString(),
+                $sender->getUniqueId()->getBytes(),
                 $showSkulls,
                 function (int $affectedRows) use ($sender, $showSkulls) : void {
                     if (!$sender->isOnline()) {
