@@ -26,7 +26,7 @@ class CSkull extends PluginBase implements Listener {
         return self::$instance;
     }
 
-    public function onLoad() : void {
+    public function onEnable() : void {
         self::$instance = $this;
 
         $oldSkullBlock = VanillaBlocks::MOB_HEAD();
@@ -49,9 +49,7 @@ class CSkull extends PluginBase implements Listener {
                 true
             );
         }
-    }
 
-    public function onEnable() : void {
         ResourceManager::getInstance();
         DataProvider::getInstance();
 
