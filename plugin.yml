@@ -15,7 +15,7 @@ permissions:
         description: "This permission is required to execute the \"/skull\" command."
         default: true
 
-    cskull.cooldown.2628000:
+    cskull.cooldown.2592000:
         description: "Set the cooldown on the \"/skull\" command to one month for a player with this permission."
         default: false
     cskull.cooldown.604800:
