@@ -80,7 +80,7 @@ class SkullEntityManager {
             }
         );
         $config = ResourceManager::getInstance()->getConfig();
-        $this->spawnDelay = max($config->get("skullEntity.spawn.delay", 1), 1);
+        $this->spawnDelay = max($config->get("skullEntity.spawn.delay", 1), 0);
         $this->maxSpawnsPerTick = max($config->get("skullEntity.spawn.maxPerTick", 1), 1);
     }
 
@@ -143,8 +143,14 @@ class SkullEntityManager {
             unset($this->spawns[$player->getName()][$entity->getId()]);
             return;
         }
-        $this->spawns[$player->getName()][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
-        $this->scheduleTask(1);
+        // The skull entity only needs to be scheduled if the delay is larger than 0.
+        // If not, it can be handled directly.
+        if ($this->spawnDelay > 0) {
+            $this->spawns[$player->getName()][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
+            $this->scheduleTask(1);
+            return;
+        }
+        $entity->handleSpawn($player, $spawn);
     }
 
     /**

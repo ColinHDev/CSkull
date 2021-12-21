@@ -1,8 +1,9 @@
 # Define the delay in ticks between the spawn or despawn interval of skull entities for players.
-# Default: 1
+# default value: 1, minimum value: 0
 skullEntity.spawn.delay: 1
 # Define how many skull entities can be spawned to or despawned from a player in the same tick.
-# Default: 1
+# If "skullEntity.spawn.delay" is set to 0, this configuration will be ignored.
+# default value: 1, minimum value: 1
 skullEntity.spawn.maxPerTick: 1
 
 database:
