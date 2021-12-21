@@ -136,6 +136,13 @@ class SkullEntityManager {
      * @param bool $spawn Whether the entity should be spawned (true) to the player or despawned (false) from it.
      */
     public function scheduleEntitySpawn(Player $player, SkullEntity $entity, bool $spawn) : void {
+        // If the entity should spawn and the player is already a viewer or if the entity should despawn and the player
+        // is no viewer, we don't need to schedule that update as our goal is already achieved.
+        if ($spawn xor !isset($entity->getViewers()[spl_object_id($player)])) {
+            // Old spawns still need to be removed, as they could override the current goal.
+            unset($this->spawns[$player->getName()][$entity->getId()]);
+            return;
+        }
         $this->spawns[$player->getName()][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
         $this->scheduleTask(1);
     }
