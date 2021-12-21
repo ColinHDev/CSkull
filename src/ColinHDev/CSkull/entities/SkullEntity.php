@@ -4,6 +4,7 @@ namespace ColinHDev\CSkull\entities;
 
 use ColinHDev\CSkull\DataProvider;
 use pocketmine\block\Block;
+use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
 use pocketmine\entity\Location;
@@ -157,11 +158,13 @@ class SkullEntity extends Human implements ChunkListener {
     }
 
     /**
-     * This method overwrites Entity::hasMovementUpdate() and therefore disables the entire movement, including gravity,
-     * collision with other entities and the movement through water or explosions. So we need this method to make our
-     * entities completely immobile.
+     * By overwriting {@link Entity::onUpdate()}, we can stop unnecessary updates on these entities, which just degrade
+     * performance while being useless in this case, since these entities won't update or change in any way.
+     * This also has the side effect of disabling the entire movement including gravity, collision with other entities
+     * and the movement through water or explosions. So it makes these entities completely immobile.
      */
-    public function hasMovementUpdate() : bool {
+    public function onUpdate(int $currentTick) : bool {
+        // We return false so that no further update for this entity is scheduled.
         return false;
     }
 
