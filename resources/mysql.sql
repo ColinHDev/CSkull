@@ -74,7 +74,7 @@ ON DUPLICATE KEY UPDATE playerName = VALUES(playerName), skinData = VALUES(skinD
 -- #      :showSkulls bool
 UPDATE players
 SET showSkulls = :showSkulls
-WHERE playerUUID = :playerUUID;
+WHERE playerUUID = :playerUUID AND showSkulls != :showSkulls;
 -- #    }
 -- #    { lastCommandUse
 -- #      :playerUUID string

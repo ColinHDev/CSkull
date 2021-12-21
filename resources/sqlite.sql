@@ -74,7 +74,7 @@ ON CONFLICT (playerUUID) DO UPDATE SET playerName = excluded.playerName, skinDat
 -- #      :showSkulls bool
 UPDATE players
 SET showSkulls = :showSkulls
-WHERE playerUUID = :playerUUID;
+WHERE playerUUID = :playerUUID AND showSkulls != :showSkulls;
 -- #    }
 -- #    { lastCommandUse
 -- #      :playerUUID string
