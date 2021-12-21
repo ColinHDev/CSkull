@@ -23,28 +23,60 @@ class SkullEntityManager {
     private ClosureTask $task;
     private int $spawnDelay;
     private int $maxSpawnsPerTick;
-    /** @var array<int, array<string, array<int, \Closure>>> */
-    private array $spawnsPerTick = [];
+    /** @var array<string, array<int, \Closure>> */
+    private array $spawns;
+    /** @var array<string, int> */
+    private array $lastTicks;
 
     public function __construct() {
         $this->task = new ClosureTask(
             function () : void {
                 $server = Server::getInstance();
                 $currentTick = $server->getTick();
-                if (isset($this->spawnsPerTick[$currentTick])) {
-                    foreach ($this->spawnsPerTick[$currentTick] as $playerName => $closures) {
-                        $player = $server->getPlayerExact($playerName);
-                        if ($player === null) {
+                $nextTick = null;
+                foreach ($this->spawns as $playerName => $closures) {
+                    // It must be checked whether skull entities can be spawned to the player or despawned from it, or
+                    // if the player is still on delay.
+                    if (isset($this->lastTicks[$playerName])) {
+                        $requestedTick = $this->lastTicks[$playerName] + $this->spawnDelay;
+                        if ($requestedTick > $currentTick) {
+                            $nextTick = min($requestedTick, $nextTick ?? PHP_INT_MAX);
                             continue;
                         }
-                        foreach ($closures as $closure) {
-                            $closure();
+                    }
+                    // An entity can not be spawned to or despawned from a player that is not online.
+                    $player = $server->getPlayerExact($playerName);
+                    if ($player === null) {
+                        unset($this->spawns[$playerName]);
+                        unset($this->lastTicks[$playerName]);
+                        continue;
+                    }
+                    // While spawning the entities the limit must not be exceeded.
+                    $spawns = 0;
+                    foreach ($closures as $entityID => $closure) {
+                        $closure();
+                        unset($this->spawns[$playerName][$entityID]);
+                        $spawns++;
+                        if ($spawns >= $this->maxSpawnsPerTick) {
+                            break;
                         }
                     }
-                    unset($this->spawnsPerTick[$currentTick]);
+                    // If no skull entities need to be spawned to the player or despawned from it, those elements can be
+                    // removed from the arrays, so the arrays don't grow indefinitely.
+                    // TODO: If another skull entity is scheduled for a player, whose elements were just removed, that
+                    //  entity would be scheduled on an earlier tick, although the player should still be on delay.
+                    if (count($this->spawns[$playerName]) === 0) {
+                        unset($this->spawns[$playerName]);
+                        unset($this->lastTicks[$playerName]);
+                        continue;
+                    }
+                    $this->lastTicks[$playerName] = $currentTick;
+                    $nextTick = min($currentTick + $this->spawnDelay, $nextTick ?? PHP_INT_MAX);
                 }
                 $this->task->setHandler(null);
-                $this->scheduleTask();
+                if ($nextTick !== null) {
+                    $this->scheduleTask($nextTick - $currentTick);
+                }
             }
         );
         $config = ResourceManager::getInstance()->getConfig();
@@ -104,44 +136,18 @@ class SkullEntityManager {
      * @param bool $spawn Whether the entity should be spawned (true) to the player or despawned (false) from it.
      */
     public function scheduleEntitySpawn(Player $player, SkullEntity $entity, bool $spawn) : void {
-        $playerName = $player->getName();
-        $entityID = $entity->getId();
-        // If there is not already another entity spawn for the given player, the next viable tick is the next one.
-        // We can not schedule it for the current tick because we can not know if the task has already run for that tick.
-        $possibleTick = Server::getInstance()->getTick() + 1;
-        foreach ($this->spawnsPerTick as $tick => $players) {
-            if ($possibleTick > $tick) {
-                continue;
-            }
-            if (!isset($players[$playerName])) {
-                continue;
-            }
-            // We can schedule the entity's spawn for the current tick, either if the current tick has not the maximal
-            // number of spawns or if there is already a spawn scheduled for that tick for the same entity for the same
-            // player, in which case we can just override the old one.
-            if (count($players[$playerName]) < $this->maxSpawnsPerTick || isset($players[$playerName][$entityID])) {
-                $possibleTick = $tick;
-                break;
-            } else {
-                $possibleTick = $tick + $this->spawnDelay;
-            }
-        }
-        $this->spawnsPerTick[$possibleTick][$playerName][$entityID] = (fn () => $entity->handleSpawn($player, $spawn));
-        $this->scheduleTask();
+        $this->spawns[$player->getName()][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
+        $this->scheduleTask(1);
     }
 
-    public function scheduleTask() : void {
+    /**
+     * @param int $delay The number of ticks to which the task is delayed.
+     */
+    public function scheduleTask(int $delay) : void {
         if ($this->task->getHandler() !== null) {
             return;
         }
-        $ticks = array_keys($this->spawnsPerTick);
-        if (count($ticks) === 0) {
-            return;
-        }
-        CSkull::getInstance()->getScheduler()->scheduleDelayedTask(
-            $this->task,
-            (min($ticks) - Server::getInstance()->getTick())
-        );
+        CSkull::getInstance()->getScheduler()->scheduleDelayedTask($this->task, $delay);
     }
 
     /**
