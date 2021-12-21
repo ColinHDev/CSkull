@@ -104,8 +104,11 @@ class SkullEntityManager {
      * @param bool $spawn Whether the entity should be spawned (true) to the player or despawned (false) from it.
      */
     public function scheduleEntitySpawn(Player $player, SkullEntity $entity, bool $spawn) : void {
-        $possibleTick = Server::getInstance()->getTick() + 1;
         $playerName = $player->getName();
+        $entityID = $entity->getId();
+        // If there is not already another entity spawn for the given player, the next viable tick is the next one.
+        // We can not schedule it for the current tick because we can not know if the task has already run for that tick.
+        $possibleTick = Server::getInstance()->getTick() + 1;
         foreach ($this->spawnsPerTick as $tick => $players) {
             if ($possibleTick > $tick) {
                 continue;
@@ -113,13 +116,17 @@ class SkullEntityManager {
             if (!isset($players[$playerName])) {
                 continue;
             }
-            if (count($players[$playerName]) >= $this->maxSpawnsPerTick) {
-                $possibleTick = $tick + $this->spawnDelay;
-            } else {
+            // We can schedule the entity's spawn for the current tick, either if the current tick has not the maximal
+            // number of spawns or if there is already a spawn scheduled for that tick for the same entity for the same
+            // player, in which case we can just override the old one.
+            if (count($players[$playerName]) < $this->maxSpawnsPerTick || isset($players[$playerName][$entityID])) {
                 $possibleTick = $tick;
+                break;
+            } else {
+                $possibleTick = $tick + $this->spawnDelay;
             }
         }
-        $this->spawnsPerTick[$possibleTick][$playerName][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
+        $this->spawnsPerTick[$possibleTick][$playerName][$entityID] = (fn () => $entity->handleSpawn($player, $spawn));
         $this->scheduleTask();
     }
 
