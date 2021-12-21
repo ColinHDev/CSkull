@@ -118,6 +118,10 @@ class SkullCommand extends Command {
                                     $done($sender, $item, $foundRow["playerName"]);
                                 },
                                 function (SqlError $error) use ($sender) : void {
+                                    if (!$sender->isOnline()) {
+                                        return;
+                                    }
+                                    $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("skull.getPlayerError", [$error->getMessage()]));
                                 }
                             );
                             return;
