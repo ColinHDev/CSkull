@@ -1,5 +1,5 @@
 ## CSkull
-CSkull is a plugin for Minecraft: Bedrock Edition server software [PocketMine-MP](https://github.com/pmmp/PocketMine-MP) which aims to implement vanilla-like player skulls, the way they exist in Minecraft: Java Edition.
+CSkull is a plugin for the Minecraft: Bedrock Edition server software [PocketMine-MP](https://github.com/pmmp/PocketMine-MP) which aims to implement vanilla-like player skulls, the way they exist in Minecraft: Java Edition.
 
 ### Features
 - Proper block collision and breaking <br>
