@@ -112,7 +112,10 @@ class SkullEntity extends Human implements ChunkListener {
                 if (!$player->isOnline()) {
                     return;
                 }
-                $this->handleSpawn($player, ((bool) $rows[array_key_first($rows)]["showSkulls"]));
+                SkullEntityManager::getInstance()->scheduleEntitySpawn(
+                    $player,
+                    fn () => $this->handleSpawn($player, ((bool) $rows[array_key_first($rows)]["showSkulls"]))
+                );
             },
             function (SqlError $error) use ($player) : void {
                 // If there was an error while executing the query, we just do the default behaviour and spawn the
@@ -120,7 +123,10 @@ class SkullEntity extends Human implements ChunkListener {
                 if (!$player->isOnline()) {
                     return;
                 }
-                $this->handleSpawn($player, true);
+                SkullEntityManager::getInstance()->scheduleEntitySpawn(
+                    $player,
+                    fn () => $this->handleSpawn($player, true)
+                );
             }
         );
     }

@@ -58,6 +58,8 @@ class Skull extends PMMPSkull {
                 $playerName = $nbt->getString("PlayerName");
                 $skinData = $nbt->getByteArray("SkinData");
             } catch (UnexpectedTagTypeException | NoSuchTagException) {
+                // If these exceptions are thwrown, the item does not have these tags and therefore is a normal
+                // player skull instead of one with a skin assigned.
                 return true;
             }
             // We could also spawn the entity when the query succeeded so we would not need to despawn the entity again
@@ -97,7 +99,9 @@ class Skull extends PMMPSkull {
     }
 
     /**
-     *
+     * Blocks only store on which integer coordinates they are placed, but skull blocks are differently placed in their
+     * block based on the direction they are facing. Therefore integer coordinates are not enough precise to describe
+     * the exact position of a skull block. This method returns the actual position with float coordinates of the block.
      */
     public function getFacingDependentPosition() : Position {
         // Skull blocks have a unique behaviour when being faced in any direction, except @link Facing::UP, where the
@@ -119,6 +123,9 @@ class Skull extends PMMPSkull {
     }
 
 
+    /**
+     * Returns
+     */
     public function getFacingDependentLocation() : Location {
         switch ($this->facing) {
             case Facing::NORTH:
@@ -135,8 +142,7 @@ class Skull extends PMMPSkull {
                 break;
             default:
                 // Nothing guarantees that the rotation will always be between 0 and 15 and won't accept values like
-                // for example -4, which would equal a rotation of 12, like real angles work
-                // (-90° = 270°, -0.5 * π = 1.5 * π).
+                // for example -4, which would equal a rotation of 12, like real angles work (-90° = 270°, -0.5 * π = 1.5 * π).
                 // To encounter that, we first use modulo 16 on the actual rotation, which will always result in a
                 // value between -16 and 15, or -16 and -1 and 0 and 15, to be more precise.
                 // Since we don't want the negative values, we add 16 and use again modulo 16, in case the values were
@@ -156,11 +162,21 @@ class Skull extends PMMPSkull {
         return Location::fromObject($this->getFacingDependentPosition(), $this->position->getWorld(), $yaw, 0.0);
     }
 
+    /**
+     * This method tries to get the skull entity at the block's position and returns it or NULL if no entity was found.
+     */
     public function getSkullEntity() : ?SkullEntity {
+        // If the position is not valid, e.g. if this block instance is not actually a part of a world, we can safely return NULL.
         if (!$this->position->isValid()) {
             return null;
         }
+        // Get the skull entity by it's expected position.
+        // Theoretically we would not need to provide a high value for the maximum distance, since the entity should
+        // exactly be at the position of getFacingDependentPosition() but it was never tested how reliable lower values are.
         $skullEntity = $this->position->getWorld()->getNearestEntity($this->getFacingDependentPosition(), 0.25, SkullEntity::class);
+        // This check is useless, since the third parameter of World::getNearestEntity() makes sure, that only an
+        // instance of SkullEntity is returned. But without this check, PhpStorm cries because the return type of
+        // World::getNearestEntity() and getSkullEntity() do not match. ¯\_(ツ)_/¯
         return $skullEntity instanceof SkullEntity ? $skullEntity : null;
     }
 }

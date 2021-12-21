@@ -1,3 +1,10 @@
+# Define the delay in ticks between the spawn or despawn interval of skull entities for players.
+# Default: 1
+skullEntity.spawn.delay: 1
+# Define how many skull entities can be spawned to or despawned from a player in the same tick.
+# Default: 1
+skullEntity.spawn.maxPerTick: 1
+
 database:
     # The database type. "sqlite" and "mysql" are supported.
     type: sqlite
