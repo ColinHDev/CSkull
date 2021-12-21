@@ -23,7 +23,7 @@ class SkullEntityManager {
     private ClosureTask $task;
     private int $spawnDelay;
     private int $maxSpawnsPerTick;
-    /** @var array<int, array<string, \Closure[]>> */
+    /** @var array<int, array<string, array<int, \Closure>>> */
     private array $spawnsPerTick = [];
 
     public function __construct() {
@@ -99,7 +99,11 @@ class SkullEntityManager {
         }
     }
 
-    public function scheduleEntitySpawn(Player $player, \Closure $closure) : void {
+    /**
+     * Schedules the given entity to be spawned to the player or despawned from it.
+     * @param bool $spawn Whether the entity should be spawned (true) to the player or despawned (false) from it.
+     */
+    public function scheduleEntitySpawn(Player $player, SkullEntity $entity, bool $spawn) : void {
         $possibleTick = Server::getInstance()->getTick() + 1;
         $playerName = $player->getName();
         foreach ($this->spawnsPerTick as $tick => $players) {
@@ -115,7 +119,7 @@ class SkullEntityManager {
                 $possibleTick = $tick;
             }
         }
-        $this->spawnsPerTick[$possibleTick][$playerName][] = $closure;
+        $this->spawnsPerTick[$possibleTick][$playerName][$entity->getId()] = (fn () => $entity->handleSpawn($player, $spawn));
         $this->scheduleTask();
     }
 

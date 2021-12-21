@@ -115,7 +115,8 @@ class SkullEntity extends Human implements ChunkListener {
                 }
                 SkullEntityManager::getInstance()->scheduleEntitySpawn(
                     $player,
-                    fn () => $this->handleSpawn($player, ((bool) $rows[array_key_first($rows)]["showSkulls"]))
+                    $this,
+                    ((bool) $rows[array_key_first($rows)]["showSkulls"])
                 );
             },
             function (SqlError $error) use ($player) : void {
@@ -126,7 +127,8 @@ class SkullEntity extends Human implements ChunkListener {
                 }
                 SkullEntityManager::getInstance()->scheduleEntitySpawn(
                     $player,
-                    fn () => $this->handleSpawn($player, true)
+                    $this,
+                    true
                 );
             }
         );
@@ -137,6 +139,7 @@ class SkullEntity extends Human implements ChunkListener {
      * checks to ensure that the entity for example wasn't closed during the query.
      * Although this could be implemented without an extra method, it reduces code duplication in various places.
      * @internal
+     * @param bool $spawn Whether the entity should be spawned (true) to the player or despawned (false) from it.
      */
     public function handleSpawn(Player $player, bool $spawn) : void {
         // We need to make sure that the entity isn't flagged for despawn or already closed, so we don't send an

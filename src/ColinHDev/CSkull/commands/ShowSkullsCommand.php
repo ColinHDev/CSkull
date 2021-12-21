@@ -79,10 +79,7 @@ class ShowSkullsCommand extends Command {
                     $world = $sender->getWorld();
                     foreach ($sender->getUsedChunks() as $chunkHash => $chunkStatus) {
                         foreach (SkullEntityManager::getInstance()->getSkullEntitiesByChunk($world, $chunkHash) as $entity) {
-                            SkullEntityManager::getInstance()->scheduleEntitySpawn(
-                                $sender,
-                                fn () => $entity->handleSpawn($sender, $showSkulls)
-                            );
+                            SkullEntityManager::getInstance()->scheduleEntitySpawn($sender, $entity, $showSkulls);
                         }
                     }
                     if ($showSkulls) {
