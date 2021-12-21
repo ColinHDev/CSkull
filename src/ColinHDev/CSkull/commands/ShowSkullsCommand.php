@@ -76,10 +76,16 @@ class ShowSkullsCommand extends Command {
                     if (!$sender->isOnline()) {
                         return;
                     }
-                    $world = $sender->getWorld();
-                    foreach ($sender->getUsedChunks() as $chunkHash => $chunkStatus) {
-                        foreach (SkullEntityManager::getInstance()->getSkullEntitiesByChunk($world, $chunkHash) as $entity) {
-                            SkullEntityManager::getInstance()->scheduleEntitySpawn($sender, $entity, $showSkulls);
+                    // The skull entities only need to be spawned to or despawned from the player if a row in the
+                    // database actually changed. E.g. if skull entities were already spawned to the player
+                    // (showSkulls = true) and the value was updated to true again ("/showskulls true"), no skull
+                    // entities need to be scheduled.
+                    if ($affectedRows !== 0) {
+                        $world = $sender->getWorld();
+                        foreach ($sender->getUsedChunks() as $chunkHash => $chunkStatus) {
+                            foreach (SkullEntityManager::getInstance()->getSkullEntitiesByChunk($world, $chunkHash) as $entity) {
+                                SkullEntityManager::getInstance()->scheduleEntitySpawn($sender, $entity, $showSkulls);
+                            }
                         }
                     }
                     if ($showSkulls) {
