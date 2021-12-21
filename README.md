@@ -5,6 +5,8 @@ CSkull is a plugin for the Minecraft: Bedrock Edition server software [PocketMin
 - Proper block collision and breaking <br>
   Many already existing plugins which implemented player skulls, used entities only, which gave the skulls their proper skin but did not give their skulls any collision. <br>
   CSkull implements collision by spawning the entity on top of the normal skull block, which makes both the correct block collision, as well as block-breaking possible.
+- Skin data always accessible <br>
+  Because we store the skin data of every player, that joined your server, in a database, it is possible to get the skull of a player, which is not online.
 - Possibility of hiding skulls <br>
   As every skull is a unique entity, the frames per second of a player's game are likely to drop when being forced to render a big number of skull entities. So, if that is the case or the player just does not want to see those skulls, he can disable them by typing a command. If a player decides to hide the entities, they are not just made invisible but will not even be spawned to him at all. The player will only see the steve skull block below the entity, so that he can see, that there possibly was an entity there.
 - Queuing skull entity spawn <br>
