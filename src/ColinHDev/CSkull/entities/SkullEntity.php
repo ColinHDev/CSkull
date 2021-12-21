@@ -125,11 +125,7 @@ class SkullEntity extends Human implements ChunkListener {
                 if (!$player->isOnline()) {
                     return;
                 }
-                SkullEntityManager::getInstance()->scheduleEntitySpawn(
-                    $player,
-                    $this,
-                    true
-                );
+                SkullEntityManager::getInstance()->scheduleEntitySpawn($player, $this, true);
             }
         );
     }
