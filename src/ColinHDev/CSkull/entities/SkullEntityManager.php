@@ -81,7 +81,7 @@ class SkullEntityManager {
         );
         $config = ResourceManager::getInstance()->getConfig();
         $this->spawnDelay = max((int) $config->get("skullEntity.spawn.delay", 1), 0);
-        $this->maxSpawnsPerTick = max((int) $config->get("skullEntity.spawn.maxPerTick", 1), 1);
+        $this->maxSpawnsPerTick = max((int) $config->get("skullEntity.spawn.maxPerTick", 2), 1);
     }
 
     public function getSkullEntitiesByChunk(World $world, int $chunkHash) : array {
