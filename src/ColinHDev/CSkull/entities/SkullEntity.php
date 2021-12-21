@@ -136,6 +136,7 @@ class SkullEntity extends Human implements ChunkListener {
      * This method is used especially for spawning / despawning entities after a query was executed, and has built-in
      * checks to ensure that the entity for example wasn't closed during the query.
      * Although this could be implemented without an extra method, it reduces code duplication in various places.
+     * @internal
      */
     public function handleSpawn(Player $player, bool $spawn) : void {
         // We need to make sure that the entity isn't flagged for despawn or already closed, so we don't send an
