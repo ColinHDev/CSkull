@@ -2,15 +2,18 @@
 
 namespace ColinHDev\CSkull\commands;
 
+use ColinHDev\CSkull\CSkull;
 use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\entities\SkullEntityManager;
 use ColinHDev\CSkull\ResourceManager;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
 use poggit\libasynql\SqlError;
 
-class ShowSkullsCommand extends Command {
+class ShowSkullsCommand extends Command implements PluginOwned {
 
     /** @var string[] */
     private const TRUE_VALUES = ["1", "y", "yes", "allow", "true"];
@@ -102,5 +105,9 @@ class ShowSkullsCommand extends Command {
                 }
             );
         }
+    }
+
+    public function getOwningPlugin() : Plugin {
+        return CSkull::getInstance();
     }
 }

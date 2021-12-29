@@ -2,6 +2,7 @@
 
 namespace ColinHDev\CSkull\commands;
 
+use ColinHDev\CSkull\CSkull;
 use ColinHDev\CSkull\DataProvider;
 use ColinHDev\CSkull\items\Skull;
 use ColinHDev\CSkull\ResourceManager;
@@ -9,9 +10,11 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\permission\Permission;
 use pocketmine\player\Player;
+use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
 use poggit\libasynql\SqlError;
 
-class SkullCommand extends Command {
+class SkullCommand extends Command implements PluginOwned {
 
     public function __construct() {
         parent::__construct(
@@ -188,5 +191,9 @@ class SkullCommand extends Command {
         }
         // No permission was found, so we return NULL to indicate that.
         return null;
+    }
+
+    public function getOwningPlugin() : Plugin {
+        return CSkull::getInstance();
     }
 }
