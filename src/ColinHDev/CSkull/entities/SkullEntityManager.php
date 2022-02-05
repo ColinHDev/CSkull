@@ -119,15 +119,18 @@ class SkullEntityManager {
         $chunkX = $position->getFloorX() >> Chunk::COORD_BIT_SIZE;
         $chunkZ = $position->getFloorZ() >> Chunk::COORD_BIT_SIZE;
         $chunkHash = World::chunkHash($chunkX, $chunkZ);
-        unset($this->skullEntities[$worldID][$chunkHash][$entity->getId()]);
-        // We need to unregister this entity from its chunk as ChunkListener when it's removed and therefore
-        // flagged for despawn.
-        $world->unregisterChunkListener($entity, $chunkX, $chunkZ);
-        if (count($this->skullEntities[$worldID][$chunkHash]) === 0) {
-            unset($this->skullEntities[$worldID][$chunkHash]);
-        }
-        if (count($this->skullEntities[$worldID]) === 0) {
-            unset($this->skullEntities[$worldID]);
+        $entityID = $entity->getId();
+        if (isset($this->skullEntities[$worldID][$chunkHash][$entityID])) {
+            unset($this->skullEntities[$worldID][$chunkHash][$entityID]);
+            // We need to unregister this entity from its chunk as ChunkListener when it's removed and therefore
+            // flagged for despawn.
+            $world->unregisterChunkListener($entity, $chunkX, $chunkZ);
+            if (count($this->skullEntities[$worldID][$chunkHash]) === 0) {
+                unset($this->skullEntities[$worldID][$chunkHash]);
+            }
+            if (count($this->skullEntities[$worldID]) === 0) {
+                unset($this->skullEntities[$worldID]);
+            }
         }
     }
 
