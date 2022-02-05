@@ -177,14 +177,16 @@ class SkullEntity extends Human implements ChunkListener {
     }
 
     public function flagForDespawn() : void {
-        parent::flagForDespawn();
-        // Calling this in Entity::flagForDespawn() instead of Entity::close() (is final anyway) could normally result
-        // in a problem, where closed entities would still be listed inside the SkullEntityManager, which would need to
-        // be manually filtered out, since when a world unloads, it only closes its entities without calling this method.
-        // But since all our skull entities are registered as chunk listeners for their chunks,
-        // ChunkListener::onChunkUnloaded() is called before Entity::close(), so we won't have any problems with
-        // closed entities in the SkullEntityManager.
-        SkullEntityManager::getInstance()->removeSkullEntity($this);
+        if (!$this->isFlaggedForDespawn() && !$this->isClosed()) {
+            parent::flagForDespawn();
+            // Calling this in Entity::flagForDespawn() instead of Entity::close() (is final anyway) could normally result
+            // in a problem, where closed entities would still be listed inside the SkullEntityManager, which would need to
+            // be manually filtered out, since when a world unloads, it only closes its entities without calling this method.
+            // But since all our skull entities are registered as chunk listeners for their chunks,
+            // ChunkListener::onChunkUnloaded() is called before Entity::close(), so we won't have any problems with
+            // closed entities in the SkullEntityManager.
+            SkullEntityManager::getInstance()->removeSkullEntity($this);
+        }
     }
 
     protected function syncNetworkData(EntityMetadataCollection $properties) : void {
