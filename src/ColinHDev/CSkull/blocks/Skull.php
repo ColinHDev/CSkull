@@ -17,6 +17,7 @@ use pocketmine\nbt\NoSuchTagException;
 use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\ChunkManager;
 use pocketmine\world\Position;
 use poggit\libasynql\SqlError;
 
@@ -47,55 +48,6 @@ class Skull extends PMMPSkull {
             }
         }
         return $item;
-    }
-
-    public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool {
-        $success = parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        if ($success && $this->skullType === SkullType::PLAYER()) {
-            $nbt = $item->getNamedTag();
-            try {
-                $playerUUID = $nbt->getString("PlayerUUID");
-                $playerName = $nbt->getString("PlayerName");
-                $skinData = $nbt->getByteArray("SkinData");
-            } catch (UnexpectedTagTypeException | NoSuchTagException) {
-                // If these exceptions are thwrown, the item does not have these tags and therefore is a normal
-                // player skull instead of one with a skin assigned.
-                return true;
-            }
-            // We could also spawn the entity when the query succeeded so we would not need to despawn the entity again
-            // if the query failed, but that would result in problems with getSkullEntity() and therefore getDrops(),
-            // because the block could be tried to destroy while the query is still executed.
-            $skullEntity = new SkullEntity($this->getFacingDependentLocation(), $playerUUID, $playerName, $skinData);
-            $skullEntity->spawnToAll();
-            DataProvider::getInstance()->setSkull(
-                $this->position->world->getFolderName(),
-                $this->position->x,
-                $this->position->y,
-                $this->position->z,
-                $playerUUID,
-                $skinData,
-                null,
-                function (SqlError $error) use ($player, $skullEntity, $blockReplace, $playerUUID, $playerName, $skinData) : void {
-                    // The query failed, so we need to undo the placement of this skull.
-                    // As explained above, we also need to check, if the block is still valid or also broken while the query
-                    // failed.
-                    $block = $this->position->world->getBlockAt($this->position->x, $this->position->y, $this->position->z, true, false);
-                    if (SkullEntityManager::isBlockValid($block)) {
-                        // We need to set the block to the one we replaced with the skull.
-                        $this->position->world->setBlock($this->position, $blockReplace);
-                        // And give the player the skull item back, if he is still online.
-                        if ($player->isOnline()) {
-                            $player->getInventory()->addItem(SkullItem::fromData($playerUUID, $playerName, $skinData));
-                        }
-                    }
-                    // We also need to despawn the entity, if it isn't already.
-                    if (!$skullEntity->isFlaggedForDespawn() && !$skullEntity->isClosed()) {
-                        $skullEntity->flagForDespawn();
-                    }
-                }
-            );
-        }
-        return $success;
     }
 
     /**

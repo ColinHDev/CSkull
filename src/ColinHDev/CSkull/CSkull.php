@@ -6,6 +6,7 @@ use ColinHDev\CSkull\blocks\Skull as SkullBlock;
 use ColinHDev\CSkull\commands\ShowSkullsCommand;
 use ColinHDev\CSkull\commands\SkullCommand;
 use ColinHDev\CSkull\items\Skull as SkullItem;
+use ColinHDev\CSkull\listeners\BlockPlaceListener;
 use ColinHDev\CSkull\listeners\ChunkLoadListener;
 use ColinHDev\CSkull\listeners\EntityEffectAddListener;
 use ColinHDev\CSkull\listeners\PlayerLoginListener;
@@ -53,6 +54,7 @@ class CSkull extends PluginBase implements Listener {
         ResourceManager::getInstance();
         DataProvider::getInstance();
 
+        $this->getServer()->getPluginManager()->registerEvents(new BlockPlaceListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new ChunkLoadListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new EntityEffectAddListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new PlayerLoginListener(), $this);
