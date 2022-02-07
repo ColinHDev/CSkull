@@ -117,7 +117,7 @@ class SkullCommand extends Command implements PluginOwned {
                                         $sender->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("skull.playerNotFound", [$playerName]));
                                         return;
                                     }
-                                    $item = Skull::fromData($foundRow["playerUUID"], $foundRow["playerUUID"], $foundRow["skinData"]);
+                                    $item = Skull::fromData($foundRow["playerUUID"], $foundRow["playerName"], $foundRow["skinData"]);
                                     $done($sender, $item, $foundRow["playerName"]);
                                 },
                                 function (SqlError $error) use ($sender) : void {
