@@ -88,6 +88,9 @@ class SkullEntity extends Human implements ChunkListener {
         // which includes not showing nametags.
         $this->setNameTagVisible(false);
         $this->setNameTagAlwaysVisible(false);
+
+        // Disables that experience orbs are attracted to skull entities.
+        $this->xpManager->setCanAttractXpOrbs(false);
     }
 
     protected function getInitialSizeInfo() : EntitySizeInfo {

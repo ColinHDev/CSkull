@@ -51,7 +51,7 @@ Customizations can be done in the `config.yml` in the plugin's `plugin_data` fol
   Change the settings for the database this plugin will use. This is the default format provided by [libasynql](https://github.com/poggit/libasynql#configuration).
 
 ### TODO
-- Experience orbs are being attracted by our skull entities which should not happen. <br>
+- **FIXED:** Experience orbs are being attracted by our skull entities which should not happen. <br>
   This is due to the way PMMP handles these attractions: experience orbs are attracted to all human entities and therefore also our skull entities. But since we can not intervene in that by listening to an event, there is no easy way to fix that currently. This problem is already referenced in an [issue](https://github.com/pmmp/PocketMine-MP/issues/4589). <br>
   We would have two solutions: overwrite the `ExperienceOrb` class to implement our own entity search in the `ExperienceOrb::entityBaseTick()` method or let the `SkullEntity` class extend the `Entity` instead of the `Human` class and implement the skin handling, etc. ourselves. Both solutions are kind of complicated and in my eyes not worth the effort at the moment, just for them to get ruled out by a far easier way when the issue is resolved. <br>
   UPDATE: The issue was resolved with the [PR](https://github.com/pmmp/PocketMine-MP/pull/4623) and merged into PocketMine-MP 4.1.0. If this minor version releases, we can resolve this issue by adding the following to our SkullEntity class: <br>
