@@ -66,7 +66,7 @@ class SkullEntity extends Human implements ChunkListener {
         $this->playerName = $playerName;
         parent::__construct(
             $location,
-            new Skin($playerUUID, $skinData, "", "geometry.skullEntity", SkullEntity::GEOMETRY)
+            new Skin($playerUUID, $skinData, "", "geometry.skullEntity", self::GEOMETRY)
         );
         SkullEntityManager::getInstance()->addSkullEntity($this);
     }
