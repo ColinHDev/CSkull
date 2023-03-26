@@ -18,17 +18,13 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIdentifier;
 use pocketmine\item\ItemIds;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\SingletonTrait;
 
 class CSkull extends PluginBase implements Listener {
-
-    private static CSkull $instance;
-
-    public static function getInstance() : CSkull {
-        return self::$instance;
-    }
+    use SingletonTrait;
 
     public function onEnable() : void {
-        self::$instance = $this;
+        self::setInstance($this);
 
         $oldSkullBlock = VanillaBlocks::MOB_HEAD();
         BlockFactory::getInstance()->register(
