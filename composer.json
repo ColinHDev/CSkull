@@ -1,7 +1,8 @@
 {
 	"name": "colinhdev/cskull",
 	"require": {
-		"pocketmine/pocketmine-mp": "5.0.0-BETA1"
+		"pocketmine/pocketmine-mp": "5.0.0-BETA1 as 4.0.0",
+		"sof3/libasynql": "4.1.0"
 	},
 	"require-dev": {
 		"phpstan/phpstan": "^1.9.2",

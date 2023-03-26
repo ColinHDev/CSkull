@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e293d600555f39310e90fbe4d167543",
+    "content-hash": "41a73ab480b65142e08321d9a7ec7ed7",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1185,6 +1185,45 @@
             "time": "2023-01-12T18:13:24+00:00"
         },
         {
+            "name": "sof3/libasynql",
+            "version": "4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/poggit/libasynql.git",
+                "reference": "a55ecceb73e6aa99b80bbec2a78aed0c6341170c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/poggit/libasynql/zipball/a55ecceb73e6aa99b80bbec2a78aed0c6341170c",
+                "reference": "a55ecceb73e6aa99b80bbec2a78aed0c6341170c",
+                "shasum": ""
+            },
+            "require": {
+                "pocketmine/pocketmine-mp": "^4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "poggit\\libasynql\\": "libasynql/src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "SOFe",
+                    "email": "sofe2038@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/poggit/libasynql/issues",
+                "source": "https://github.com/poggit/libasynql/tree/4.1.0"
+            },
+            "time": "2022-05-25T15:45:58+00:00"
+        },
+        {
             "name": "symfony/filesystem",
             "version": "v5.4.21",
             "source": {
@@ -1654,7 +1693,14 @@
             "time": "2023-02-21T10:17:10+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "pocketmine/pocketmine-mp",
+            "version": "5.0.0.0-beta1",
+            "alias": "4.0.0",
+            "alias_normalized": "4.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/pocketmine-mp": 10
